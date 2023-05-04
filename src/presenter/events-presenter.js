@@ -7,17 +7,22 @@ import {render} from '../render.js';
 export default class EventPresenter {
   listComponent = new ListView();
 
-  constructor({eventContainer}) {
+  constructor({eventContainer, pointsModel}) {
     this.eventContainer = eventContainer;
+    this.pointsModel = pointsModel;
   }
 
   init() {
+    this.eventPoints = [...this.pointsModel.getPoints()];
+    this.eventOffers = [...this.pointsModel.getOffers()];
+    this.eventDestinations = [...this.pointsModel.getDestinations()];
+
     render(new SortView(), this.eventContainer);
     render(this.listComponent, this.eventContainer);
     render(new EditRoutFormView(), this.listComponent.getElement());
 
-    for (let i = 0; i < 3; i++) {
-      render(new RoutPointView(), this.listComponent.getElement());
+    for (let i = 0; i < this.eventPoints.length; i++) {
+      render(new RoutPointView({point: this.eventPoints[i], offers: this.eventOffers, destinations: this.eventDestinations}), this.listComponent.getElement());
     }
   }
 }
