@@ -13,6 +13,31 @@ const mockOffers = [
     ]
   },
   {
+    type: POINT_TYPE.FLIGHT,
+    offers: [
+      {
+        id: '1',
+        title: 'Add luggage',
+        price: getRandomNumber(MIN_PRICE, MAX_PRICE)
+      },
+      {
+        id: '2',
+        title: 'Upgrade to a business class',
+        price: getRandomNumber(MIN_PRICE, MAX_PRICE)
+      },
+      {
+        id: '3',
+        title: 'Choose seats',
+        price: getRandomNumber(MIN_PRICE, MAX_PRICE)
+      },
+      {
+        id: '4',
+        title: 'Add meal',
+        price: getRandomNumber(MIN_PRICE, MAX_PRICE)
+      }
+    ]
+  },
+  {
     type: POINT_TYPE.BUS,
     offers: [
       {
@@ -168,14 +193,5 @@ const mockOffers = [
     ]
   }
 ];
-
-// const findOffersForPoint = (pointType) => {
-//   mockOffers.find((item) => item.type === pointType);
-// };
-
-// const getRandomOffer = (pointType) => {
-//   const pointOffers = mockOffers.find((item) => item.type === pointType);
-//   pointOffers.offers = pointOffers.filter((item) => item.id ===  )
-// }
 
 export {mockOffers};

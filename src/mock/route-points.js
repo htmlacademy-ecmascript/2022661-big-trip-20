@@ -10,7 +10,7 @@ const mockRoutPoints = [
     dateTo: '2023-05-11T11:23:13.375Z',
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: true,
-    offers: [2],
+    offers: ['2'],
     type: POINT_TYPE.FLIGHT,
   },
   {
@@ -20,7 +20,7 @@ const mockRoutPoints = [
     dateTo: '2023-06-15T18:50:13.375Z',
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: true,
-    offers: [1],
+    offers: ['1'],
     type: POINT_TYPE.TAXI,
   },
   {
@@ -30,7 +30,7 @@ const mockRoutPoints = [
     dateTo: '2023-07-17T22:50:13.375Z',
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: false,
-    offers: [2, 4],
+    offers: ['2', '4'],
     type: POINT_TYPE.CHECK_IN,
   },
   {
@@ -40,7 +40,7 @@ const mockRoutPoints = [
     dateTo: '2023-08-18T20:55:13.375Z',
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: false,
-    offers: [1, 3],
+    offers: ['1', '3'],
     type: POINT_TYPE.BUS,
   },
   {
@@ -50,7 +50,7 @@ const mockRoutPoints = [
     dateTo: '2023-09-19T15:30:13.375Z',
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: true,
-    offers: [1, 2, 3, 4],
+    offers: ['1', '2', '3', '4'],
     type: POINT_TYPE.RESTAURANT,
   },
 ];
