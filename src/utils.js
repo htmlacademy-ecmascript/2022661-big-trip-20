@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
 
+const FULL_DATE_FORMAT = 'YY/MM/DD HH:mm';
 const DATE_FORMAT = 'MMM D';
 const TIME_FORMAT = 'HH:mm';
 
@@ -13,16 +14,12 @@ function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-function humanizeEventDate(date) {
-  return date ? dayjs(date).utc().format(DATE_FORMAT) : '';
-}
-
-function humanizeEventTime(time) {
-  return time ? dayjs(time).utc().format(TIME_FORMAT) : '';
+function humanizeEventDate(time, format) {
+  return time ? dayjs(time).utc().format(format) : '';
 }
 
 function countTimeDuration(startDate, endDate) {
-  const difference = (dayjs(endDate).diff(startDate));
+  const difference = dayjs(endDate).diff(startDate);
   return dayjs.duration(difference).format('HH[h] mm[m]');
 }
 
@@ -52,4 +49,4 @@ function getRandomNumber(min, max, decimalCount = 0) {
   return result;
 }
 
-export {getRandomArrayElement, humanizeEventDate, humanizeEventTime, getRandomNumber, countTimeDuration };
+export {getRandomArrayElement, humanizeEventDate, FULL_DATE_FORMAT, DATE_FORMAT, TIME_FORMAT, getRandomNumber, countTimeDuration };

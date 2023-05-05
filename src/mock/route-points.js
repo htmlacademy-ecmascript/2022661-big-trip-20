@@ -1,4 +1,4 @@
-import { POINT_TYPE, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID,MAX_DESTINATION_ID } from '../const';
+import { POINT_TYPES, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID,MAX_DESTINATION_ID } from '../const';
 import { getRandomArrayElement, getRandomNumber } from '../utils';
 
 
@@ -11,7 +11,7 @@ const mockRoutPoints = [
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: true,
     offers: ['2'],
-    type: POINT_TYPE.FLIGHT,
+    type: POINT_TYPES.FLIGHT,
   },
   {
     id: '2',
@@ -21,7 +21,7 @@ const mockRoutPoints = [
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: true,
     offers: ['1'],
-    type: POINT_TYPE.TAXI,
+    type: POINT_TYPES.TAXI,
   },
   {
     id: '3',
@@ -31,7 +31,7 @@ const mockRoutPoints = [
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: false,
     offers: ['2', '4'],
-    type: POINT_TYPE.CHECK_IN,
+    type: POINT_TYPES.CHECK_IN,
   },
   {
     id: '4',
@@ -41,7 +41,7 @@ const mockRoutPoints = [
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: false,
     offers: ['1', '3'],
-    type: POINT_TYPE.BUS,
+    type: POINT_TYPES.BUS,
   },
   {
     id: '5',
@@ -50,8 +50,8 @@ const mockRoutPoints = [
     dateTo: '2023-09-19T15:30:13.375Z',
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: true,
-    offers: ['1', '2', '3', '4'],
-    type: POINT_TYPE.RESTAURANT,
+    offers: ['1', '2', '4'],
+    type: POINT_TYPES.RESTAURANT,
   },
 ];
 

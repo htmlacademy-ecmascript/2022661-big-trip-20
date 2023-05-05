@@ -1,24 +1,24 @@
 import {createElement} from '../render.js';
-import {humanizeEventDate, humanizeEventTime, countTimeDuration } from '../utils.js';
+import {humanizeEventDate, countTimeDuration, DATE_FORMAT, TIME_FORMAT } from '../utils.js';
 
 function createRoutPointTemplate (point, allOffers , allDestinations) {
   const {basePrice, dateFrom, dateTo, destination, offers, type, isFavorite} = point;
 
-  const date = humanizeEventDate(dateFrom);
-  const timeFrom = humanizeEventTime(dateFrom);
-  const timeTo = humanizeEventTime(dateTo);
+  const date = humanizeEventDate(dateFrom, DATE_FORMAT);
+  const timeFrom = humanizeEventDate(dateFrom, TIME_FORMAT);
+  const timeTo = humanizeEventDate(dateTo, TIME_FORMAT);
   const timeDuration = countTimeDuration(dateFrom, dateTo);
+
+  const favoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
 
   const getRandomDestination = (pointDestination) => {
     const choosenDestination = allDestinations.find((item) => pointDestination.includes(item.id));
     return choosenDestination.name;
   };
 
-  const favoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
-
   const getRandomOffer = (pointType, pointOffers) => {
-    const pointTypeOffers = allOffers.find((item) => item.type === pointType);
-    const choosenOffers = pointTypeOffers.offers.filter((item) => pointOffers.includes(item.id));
+    const pointTypeOffers = allOffers.find((item) => item.type === pointType).offers;
+    const choosenOffers = pointTypeOffers.filter((item) => pointOffers.includes(item.id));
     return choosenOffers;
   };
 

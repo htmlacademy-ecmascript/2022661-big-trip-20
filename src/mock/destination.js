@@ -4,8 +4,8 @@ import { getRandomArrayElement, getRandomNumber } from '../utils';
 const mockDestinations = [
   {
     id: '1',
-    description: getRandomArrayElement(DESCRIPTION),
     name: 'Chamonix',
+    description: getRandomArrayElement(DESCRIPTION),
     pictures: [
       {
         src: `${PHOTO_URL}${getRandomNumber(1, 10)}`,
@@ -15,8 +15,8 @@ const mockDestinations = [
   },
   {
     id: '2',
-    description: getRandomArrayElement(DESCRIPTION),
     name: 'Amsterdam',
+    description: getRandomArrayElement(DESCRIPTION),
     pictures: [
       {
         src: `${PHOTO_URL}${getRandomNumber(1, 10)}`,
@@ -30,8 +30,8 @@ const mockDestinations = [
   },
   {
     id: '3',
-    description: getRandomArrayElement(DESCRIPTION),
     name: 'Geneva',
+    description: getRandomArrayElement(DESCRIPTION),
     pictures: [
       {
         src: `${PHOTO_URL}${getRandomNumber(1, 10)}`,
@@ -45,8 +45,8 @@ const mockDestinations = [
   },
   {
     id: '4',
-    description: getRandomArrayElement(DESCRIPTION),
     name: 'Rome',
+    description: getRandomArrayElement(DESCRIPTION),
     pictures: [
       {
         src: `${PHOTO_URL}${getRandomNumber(1, 10)}`,

@@ -1,9 +1,9 @@
-import { POINT_TYPE, MIN_PRICE, MAX_PRICE } from '../const';
+import { POINT_TYPES, MIN_PRICE, MAX_PRICE } from '../const';
 import { getRandomNumber } from '../utils';
 
 const mockOffers = [
   {
-    type: POINT_TYPE.TAXI,
+    type: POINT_TYPES.TAXI,
     offers: [
       {
         id: '1',
@@ -13,7 +13,7 @@ const mockOffers = [
     ]
   },
   {
-    type: POINT_TYPE.FLIGHT,
+    type: POINT_TYPES.FLIGHT,
     offers: [
       {
         id: '1',
@@ -38,7 +38,7 @@ const mockOffers = [
     ]
   },
   {
-    type: POINT_TYPE.BUS,
+    type: POINT_TYPES.BUS,
     offers: [
       {
         id: '1',
@@ -58,7 +58,7 @@ const mockOffers = [
     ]
   },
   {
-    type: POINT_TYPE.TRAIN,
+    type: POINT_TYPES.TRAIN,
     offers: [
       {
         id: '1',
@@ -83,7 +83,7 @@ const mockOffers = [
     ]
   },
   {
-    type: POINT_TYPE.SHIP,
+    type: POINT_TYPES.SHIP,
     offers: [
       {
         id: '1',
@@ -108,7 +108,7 @@ const mockOffers = [
     ]
   },
   {
-    type: POINT_TYPE.DRIVE,
+    type: POINT_TYPES.DRIVE,
     offers: [
       {
         id: '1',
@@ -118,7 +118,7 @@ const mockOffers = [
     ]
   },
   {
-    type: POINT_TYPE.CHECK_IN,
+    type: POINT_TYPES.CHECK_IN,
     offers: [
       {
         id: '1',
@@ -143,7 +143,7 @@ const mockOffers = [
     ]
   },
   {
-    type: POINT_TYPE.SIGHTSEEING,
+    type: POINT_TYPES.SIGHTSEEING,
     offers: [
       {
         id: '1',
@@ -168,7 +168,7 @@ const mockOffers = [
     ]
   },
   {
-    type: POINT_TYPE.RESTAURANT,
+    type: POINT_TYPES.RESTAURANT,
     offers: [
       {
         id: '1',

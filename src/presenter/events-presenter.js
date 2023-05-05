@@ -19,9 +19,9 @@ export default class EventPresenter {
 
     render(new SortView(), this.eventContainer);
     render(this.listComponent, this.eventContainer);
-    render(new EditRoutFormView(), this.listComponent.getElement());
+    render(new EditRoutFormView({point: this.eventPoints[0], offers: this.eventOffers, destinations: this.eventDestinations}), this.listComponent.getElement());
 
-    for (let i = 0; i < this.eventPoints.length; i++) {
+    for (let i = 1; i < this.eventPoints.length; i++) {
       render(new RoutPointView({point: this.eventPoints[i], offers: this.eventOffers, destinations: this.eventDestinations}), this.listComponent.getElement());
     }
   }
