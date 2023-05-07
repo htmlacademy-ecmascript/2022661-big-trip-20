@@ -7,22 +7,34 @@ import {render} from '../render.js';
 export default class EventPresenter {
   listComponent = new ListView();
 
-  constructor({eventContainer, pointsModel}) {
+  constructor({eventContainer, pointsModel ,offersModel, destinationsModel}) {
     this.eventContainer = eventContainer;
     this.pointsModel = pointsModel;
+    this.destinationsModel = destinationsModel;
+    this.offersModel = offersModel;
   }
 
   init() {
     this.eventPoints = [...this.pointsModel.getPoints()];
-    this.eventOffers = [...this.pointsModel.getOffers()];
-    this.eventDestinations = [...this.pointsModel.getDestinations()];
 
     render(new SortView(), this.eventContainer);
     render(this.listComponent, this.eventContainer);
-    render(new EditRoutFormView({point: this.eventPoints[0], offers: this.eventOffers, destinations: this.eventDestinations}), this.listComponent.getElement());
+
+    render(new EditRoutFormView({
+      point: this.eventPoints[0],
+      offers: this.offersModel.getOffersByType(this.eventPoints[0].type),
+      destinations: this.destinationsModel.getDestinationById(this.eventPoints[0].destination)
+    }),
+    this.listComponent.getElement());
+
 
     for (let i = 1; i < this.eventPoints.length; i++) {
-      render(new RoutPointView({point: this.eventPoints[i], offers: this.eventOffers, destinations: this.eventDestinations}), this.listComponent.getElement());
+      render(new RoutPointView({
+        point: this.eventPoints[i],
+        offers: this.offersModel.getOffersByType(this.eventPoints[i].type),
+        destinations: this.destinationsModel.getDestinationById(this.eventPoints[i].destination)
+      }),
+      this.listComponent.getElement());
     }
   }
 }

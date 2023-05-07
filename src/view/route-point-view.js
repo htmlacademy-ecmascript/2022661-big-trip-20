@@ -1,8 +1,8 @@
 import {createElement} from '../render.js';
 import {humanizeEventDate, countTimeDuration, DATE_FORMAT, TIME_FORMAT } from '../utils.js';
 
-function createRoutPointTemplate (point, allOffers , allDestinations) {
-  const {basePrice, dateFrom, dateTo, destination, offers, type, isFavorite} = point;
+function createRoutPointTemplate (point, offersByType, destinationById) {
+  const {basePrice, dateFrom, dateTo, offers, type, isFavorite} = point;
 
   const date = humanizeEventDate(dateFrom, DATE_FORMAT);
   const timeFrom = humanizeEventDate(dateFrom, TIME_FORMAT);
@@ -11,25 +11,18 @@ function createRoutPointTemplate (point, allOffers , allDestinations) {
 
   const favoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
 
-  const getRandomDestination = (pointDestination) => {
-    const choosenDestination = allDestinations.find((item) => pointDestination.includes(item.id));
-    return choosenDestination.name;
-  };
-
-  const getRandomOffer = (pointType, pointOffers) => {
-    const pointTypeOffers = allOffers.find((item) => item.type === pointType).offers;
-    const choosenOffers = pointTypeOffers.filter((item) => pointOffers.includes(item.id));
-    return choosenOffers;
-  };
+  const findChoosenOffers = (choosenOffers) => offersByType.filter((item) => choosenOffers.includes(item.id));
 
   function createOfferTemplate() {
-    return getRandomOffer(type, offers).map((item) => /*html*/ `
-      <li class="event__offer">
-        <span class="event__offer-title">${item.title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${item.price}</span>
-     </li>
-    `).join('');
+    return findChoosenOffers(offers)
+      .map((item) => /*html*/ `
+        <li class="event__offer">
+          <span class="event__offer-title">${item.title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${item.price}</span>
+        </li>
+      `)
+      .join('');
   }
 
   return /*html*/ `
@@ -39,7 +32,7 @@ function createRoutPointTemplate (point, allOffers , allDestinations) {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${getRandomDestination(destination)}</h3>
+        <h3 class="event__title">${type} ${destinationById.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${dateFrom}">${timeFrom}</time>
