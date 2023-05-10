@@ -1,6 +1,6 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import { POINT_TYPES } from '../const';
-import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils.js';
+import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils';
 
 function createEditRoutFormTemplate (point, offersByType, destinationById) {
   const {basePrice, dateFrom, dateTo, offers, type} = point;
@@ -130,26 +130,19 @@ function createEditRoutFormTemplate (point, offersByType, destinationById) {
   `;
 }
 
-export default class EditRoutFormView {
+export default class EditRoutFormView extends AbstractView {
+  #point = null;
+  #offers = null;
+  #destinations = null;
+
   constructor({point, offers, destinations}) {
-    this.point = point;
-    this.offers = offers;
-    this.destinations = destinations;
+    super();
+    this.#point = point;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
-  getTemplate() {
-    return createEditRoutFormTemplate(this.point, this.offers, this.destinations);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEditRoutFormTemplate(this.#point, this.#offers, this.#destinations);
   }
 }

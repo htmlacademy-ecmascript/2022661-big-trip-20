@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {humanizeEventDate, countTimeDuration, DATE_FORMAT, TIME_FORMAT } from '../utils.js';
 
 function createRoutPointTemplate (point, offersByType, destinationById) {
@@ -62,26 +62,19 @@ function createRoutPointTemplate (point, offersByType, destinationById) {
   `;
 }
 
-export default class RoutPointView {
+export default class RoutPointView extends AbstractView {
+  #point = null;
+  #offers = null;
+  #destinations = null;
+
   constructor({point, offers, destinations}) {
-    this.point = point;
-    this.offers = offers;
-    this.destinations = destinations;
+    super();
+    this.#point = point;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
-  getTemplate() {
-    return createRoutPointTemplate(this.point, this.offers, this.destinations);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createRoutPointTemplate(this.#point, this.#offers, this.#destinations);
   }
 }

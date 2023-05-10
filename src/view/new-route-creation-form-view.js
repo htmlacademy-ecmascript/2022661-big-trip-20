@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 
 function createNewRouteCreationFormTemplate () {
   return /*html*/`
@@ -167,20 +167,8 @@ function createNewRouteCreationFormTemplate () {
   `;
 }
 
-export default class NewRouteCreationFormView {
-  getTemplate() {
+export default class NewRouteCreationFormView extends AbstractView {
+  get template() {
     return createNewRouteCreationFormTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

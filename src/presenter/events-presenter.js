@@ -2,7 +2,7 @@ import ListView from '../view/list-view.js';
 import SortView from '../view/sort-view.js';
 import EditRoutFormView from '../view/edit-rout-form-view.js';
 import RoutPointView from '../view/route-point-view.js';
-import {render} from '../render.js';
+import {render} from '../framework/render';
 
 export default class EventPresenter {
   listComponent = new ListView();
@@ -25,7 +25,7 @@ export default class EventPresenter {
       offers: this.offersModel.getOffersByType(this.eventPoints[0].type),
       destinations: this.destinationsModel.getDestinationById(this.eventPoints[0].destination)
     }),
-    this.listComponent.getElement());
+    this.listComponent.element);
 
 
     for (let i = 1; i < this.eventPoints.length; i++) {
@@ -34,7 +34,7 @@ export default class EventPresenter {
         offers: this.offersModel.getOffersByType(this.eventPoints[i].type),
         destinations: this.destinationsModel.getDestinationById(this.eventPoints[i].destination)
       }),
-      this.listComponent.getElement());
+      this.listComponent.element);
     }
   }
 }
