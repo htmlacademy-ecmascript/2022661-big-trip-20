@@ -1,7 +1,8 @@
-import ListView from '../view/list-view.js';
-import SortView from '../view/sort-view.js';
-import EditRoutFormView from '../view/edit-rout-form-view.js';
-import RoutPointView from '../view/route-point-view.js';
+import ListView from '../view/list-view';
+import SortView from '../view/sort-view';
+import EditRoutFormView from '../view/edit-rout-form-view';
+import RoutPointView from '../view/route-point-view';
+import EmptyListMessage from '../view/empty-list-view';
 import {render, replace} from '../framework/render';
 
 export default class EventPresenter {
@@ -23,14 +24,7 @@ export default class EventPresenter {
   init() {
     this.#eventPoints = [...this.#pointsModel.points];
 
-    render(new SortView(), this.#eventContainer);
-    render(this.#listComponent, this.#eventContainer);
-
-    for (let i = 0; i < this.#eventPoints.length; i++) {
-      this.#renderPoint({point: this.#eventPoints[i],
-        offers: this.#offersModel.getOffersByType(this.#eventPoints[i].type),
-        destinations: this.#destinationsModel.getDestinationById(this.#eventPoints[i].destination)});
-    }
+    this.#renderEvents();
   }
 
   #renderPoint({point, offers, destinations}) {
@@ -75,5 +69,20 @@ export default class EventPresenter {
     }
 
     render (pointComponent, this.#listComponent.element);
+  }
+
+  #renderEvents() {
+    if (!this.#eventPoints.length) {
+      render(new EmptyListMessage(), this.#eventContainer);
+    } else {
+      render(new SortView(), this.#eventContainer);
+      render(this.#listComponent, this.#eventContainer);
+
+      for (let i = 0; i < this.#eventPoints.length; i++) {
+        this.#renderPoint({point: this.#eventPoints[i],
+          offers: this.#offersModel.getOffersByType(this.#eventPoints[i].type),
+          destinations: this.#destinationsModel.getDestinationById(this.#eventPoints[i].destination)});
+      }
+    }
   }
 }
