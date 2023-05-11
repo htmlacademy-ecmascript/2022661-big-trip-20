@@ -2,7 +2,7 @@ import ListView from '../view/list-view.js';
 import SortView from '../view/sort-view.js';
 import EditRoutFormView from '../view/edit-rout-form-view.js';
 import RoutPointView from '../view/route-point-view.js';
-import {render} from '../framework/render';
+import {render, replace} from '../framework/render';
 
 export default class EventPresenter {
   #listComponent = new ListView();
@@ -26,21 +26,54 @@ export default class EventPresenter {
     render(new SortView(), this.#eventContainer);
     render(this.#listComponent, this.#eventContainer);
 
-    render(new EditRoutFormView({
-      point: this.#eventPoints[0],
-      offers: this.#offersModel.getOffersByType(this.#eventPoints[0].type),
-      destinations: this.#destinationsModel.getDestinationById(this.#eventPoints[0].destination)
-    }),
-    this.#listComponent.element);
-
-
-    for (let i = 1; i < this.#eventPoints.length; i++) {
-      render(new RoutPointView({
-        point: this.#eventPoints[i],
+    for (let i = 0; i < this.#eventPoints.length; i++) {
+      this.#renderPoint({point: this.#eventPoints[i],
         offers: this.#offersModel.getOffersByType(this.#eventPoints[i].type),
-        destinations: this.#destinationsModel.getDestinationById(this.#eventPoints[i].destination)
-      }),
-      this.#listComponent.element);
+        destinations: this.#destinationsModel.getDestinationById(this.#eventPoints[i].destination)});
     }
+  }
+
+  #renderPoint({point, offers, destinations}) {
+    const pointComponent = new RoutPointView({
+      point,
+      offers,
+      destinations,
+      onEditClick: () => {
+        replaceRoutPointToEditForm();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    const pointEditComponent = new EditRoutFormView ({
+      point,
+      offers,
+      destinations,
+      onFormSubmit: () => {
+        replaceEditFormToRoutPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onRollUpClick: () => {
+        replaceEditFormToRoutPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function escKeyDownHandler (evt) {
+      if(evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceEditFormToRoutPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    }
+
+    function replaceRoutPointToEditForm() {
+      replace(pointEditComponent, pointComponent);
+    }
+
+    function replaceEditFormToRoutPoint() {
+      replace(pointComponent, pointEditComponent);
+    }
+
+    render (pointComponent, this.#listComponent.element);
   }
 }
