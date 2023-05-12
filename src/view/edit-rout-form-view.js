@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 import { POINT_TYPES } from '../const';
-import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils';
+import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 
 function createEditRoutFormTemplate (point, offersByType, destinationById) {
   const {basePrice, dateFrom, dateTo, offers, type} = point;

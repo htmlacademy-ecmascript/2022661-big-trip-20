@@ -10,6 +10,13 @@ const POINT_TYPES = {
   RESTAURANT: 'Restaurant',
 };
 
+const FILTER_TYPES = {
+  EVERYTHING: 'Everything',
+  FUTURE: 'Future',
+  PRESENT: 'Present',
+  PAST: 'Past',
+};
+
 const DESCRIPTION = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra.',
@@ -26,4 +33,4 @@ const MAX_PRICE = 5000;
 const MIN_DESTINATION_ID = 1;
 const MAX_DESTINATION_ID = 4;
 
-export {POINT_TYPES, DESCRIPTION, PHOTO_URL, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID, MAX_DESTINATION_ID};
+export {POINT_TYPES, DESCRIPTION, PHOTO_URL, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID, MAX_DESTINATION_ID, FILTER_TYPES};

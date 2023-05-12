@@ -1,5 +1,5 @@
 import { POINT_TYPES, MIN_PRICE, MAX_PRICE } from '../const';
-import { getRandomNumber } from '../utils';
+import { getRandomNumber } from '../utils/common';
 
 const mockOffers = [
   {
