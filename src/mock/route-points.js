@@ -1,13 +1,12 @@
 import { POINT_TYPES, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID,MAX_DESTINATION_ID } from '../const';
-import { getRandomArrayElement, getRandomNumber } from '../utils';
-
+import { getRandomArrayElement, getRandomNumber } from '../utils/common';
 
 const mockRoutPoints = [
   {
     id: '1',
     basePrice: getRandomNumber(MIN_PRICE, MAX_PRICE),
-    dateFrom: '2023-05-10T22:55:56.845Z',
-    dateTo: '2023-05-10T23:23:13.375Z',
+    dateFrom: '2023-05-12T22:55:56.845Z',
+    dateTo: '2023-05-12T23:23:13.375Z',
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: true,
     offers: ['2'],
@@ -26,8 +25,8 @@ const mockRoutPoints = [
   {
     id: '3',
     basePrice: getRandomNumber(MIN_PRICE, MAX_PRICE),
-    dateFrom: '2023-07-11T14:20:13.375Z',
-    dateTo: '2023-07-17T22:50:13.375Z',
+    dateFrom: '2023-05-11T14:20:13.375Z',
+    dateTo: '2023-05-17T22:50:13.375Z',
     destination: getRandomNumber(MIN_DESTINATION_ID, MAX_DESTINATION_ID),
     isFavorite: false,
     offers: ['2', '4'],

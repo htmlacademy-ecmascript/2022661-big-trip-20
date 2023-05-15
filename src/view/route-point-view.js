@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizeEventDate, countTimeDuration, DATE_FORMAT, TIME_FORMAT } from '../utils.js';
+import {humanizeEventDate, countTimeDuration, DATE_FORMAT, TIME_FORMAT } from '../utils/points.js';
 
 function createRoutPointTemplate (point, offersByType, destinationById) {
   const {basePrice, dateFrom, dateTo, offers, type, isFavorite} = point;

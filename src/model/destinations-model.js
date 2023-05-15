@@ -13,3 +13,4 @@ export default class DestinationsModel {
     return this.#destinationById;
   }
 }
+

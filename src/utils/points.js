@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
 
 const FULL_DATE_FORMAT = 'YY/MM/DD HH:mm';
 const DATE_FORMAT = 'MMM D';
@@ -15,14 +18,12 @@ const MS_IN_DAY = 86400000;
 
 dayjs.extend(utc);
 dayjs.extend(duration);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
-
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
 
 function humanizeEventDate(time, format) {
-  return time ? dayjs(time).utc().format(format) : '';
+  return time ? dayjs(time).format(format) : '';
 }
 
 function countTimeDuration(startDate, endDate) {
@@ -46,30 +47,19 @@ function countTimeDuration(startDate, endDate) {
   return pointDuration;
 }
 
-function getRandomNumber(min, max, decimalCount = 0) {
-  let result;
-  try {
-    if (min === max) {
-      return min;
-    }
-    if (min > max) {
-      const tmp = max;
-      max = min;
-      min = tmp;
-    }
-    if (min < 0) {
-      min = min * -1;
-    }
-    if (max < 0) {
-      max = max * -1;
-    }
-
-    const randomNumber = Math.random() * (max - min) + min;
-    result = randomNumber.toFixed(decimalCount);
-  } catch (error) {
-    result = 'Диапозон или количество знаков после запятой указаны некорректно';
-  }
-  return result;
+function isPointDateExpired(endDate) {
+  return endDate && dayjs().isAfter(endDate, 'D');
 }
 
-export {getRandomArrayElement, humanizeEventDate, FULL_DATE_FORMAT, DATE_FORMAT, TIME_FORMAT, getRandomNumber, countTimeDuration };
+function isPointDateInFuture(startDate) {
+  return startDate && dayjs().isBefore(startDate, 'D');
+}
+
+function isPointDateInPresent(startDate, endDate) {
+  const startIsSameOrBeforeToday = dayjs().isSameOrAfter(dayjs(startDate), 'day');
+  const endIsSameOrAfterToday = dayjs().isSameOrBefore(dayjs(endDate).format(), 'D');
+
+  return startIsSameOrBeforeToday && endIsSameOrAfterToday;
+}
+
+export { humanizeEventDate, countTimeDuration, isPointDateExpired, isPointDateInFuture, isPointDateInPresent, FULL_DATE_FORMAT, DATE_FORMAT, TIME_FORMAT };
