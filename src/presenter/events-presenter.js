@@ -7,6 +7,7 @@ import PointPresenter from './point-presenter';
 export default class EventPresenter {
   #listComponent = new ListView();
   #eventPoints = [];
+  #pointPresenters = new Map();
 
   #eventContainer = null;
   #pointsModel = null;
@@ -31,6 +32,7 @@ export default class EventPresenter {
       listComponent: this.#listComponent.element
     });
     pointPresenter.init({point, offers, destinations});
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints() {
@@ -57,5 +59,10 @@ export default class EventPresenter {
       render(new SortView(), this.#eventContainer);
       this.#renderPointsList();
     }
+  }
+
+  #clearPointsList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 }

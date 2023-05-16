@@ -1,4 +1,4 @@
-import {render, replace} from '../framework/render';
+import {render, replace, remove} from '../framework/render';
 import EditRoutFormView from '../view/edit-rout-form-view';
 import RoutPointView from '../view/route-point-view';
 
@@ -18,6 +18,9 @@ export default class PointPresenter {
     this.#point = point;
     this.#offers = offers;
     this.#destinations = destinations;
+
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new RoutPointView({
       point: this.#point,
@@ -41,7 +44,25 @@ export default class PointPresenter {
       }
     });
 
-    render(this.#pointComponent, this.#listComponent);
+    if(prevPointComponent === null || prevPointEditComponent === null) {
+      render(this.#pointComponent, this.#listComponent);
+    }
+
+    if(this.#listComponent.contains(prevPointComponent?.element)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if(this.#listComponent.contains(prevPointEditComponent?.element)) {
+      replace(this.#pointComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
+  }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
   }
 
 
