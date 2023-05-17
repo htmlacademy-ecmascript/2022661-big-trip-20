@@ -1,4 +1,5 @@
 import {render} from '../framework/render';
+import { updateItem } from '../utils/common';
 import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
@@ -27,21 +28,50 @@ export default class EventPresenter {
     this.#renderEventsBoard();
   }
 
-  #renderPoint({point, offers, destinations}) {
+  #handlePointChange = (updatePoint) => {
+    this.#eventPoints = updateItem(this.#eventPoints, updatePoint);
+    this.#pointPresenters.get(updatePoint.id).init(updatePoint);
+  };
+
+  #renderPoint(point, offers, destinations) {
     const pointPresenter = new PointPresenter({
-      listComponent: this.#listComponent.element
+      listComponent: this.#listComponent.element,
+      offers: offers,
+      destinations: destinations,
+      onDataChange: this.#handlePointChange,
     });
-    pointPresenter.init({point, offers, destinations});
+    pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints() {
-    for (let i = 0; i < this.#eventPoints.length; i++) {
-      this.#renderPoint({point: this.#eventPoints[i],
-        offers: this.#offersModel.getOffersByType(this.#eventPoints[i].type),
-        destinations: this.#destinationsModel.getDestinationById(this.#eventPoints[i].destination)});
-    }
+    this.#eventPoints.forEach((point) => {
+      this.#renderPoint(
+        point,
+        this.#offersModel.getOffersByType(point.type),
+        this.#destinationsModel.getDestinationById(point.destination)
+      );
+    });
   }
+
+  // #renderPoint({point, offers, destinations}) {
+  //   const pointPresenter = new PointPresenter({
+  //     listComponent: this.#listComponent.element,
+  //     onDataChange: this.#handlePointChange,
+  //   });
+  //   pointPresenter.init({point, offers, destinations});
+  //   this.#pointPresenters.set(point.id, pointPresenter);
+  // }
+
+  // #renderPoints() {
+  //   this.#eventPoints.forEach((point) => {
+  //     this.#renderPoint({
+  //       point,
+  //       offers: this.#offersModel.getOffersByType(point.type),
+  //       destinations: this.#destinationsModel.getDestinationById(point.destination)
+  //     });
+  //   });
+  // }
 
   #renderPointsList() {
     render(this.#listComponent, this.#eventContainer);

@@ -10,14 +10,17 @@ export default class PointPresenter {
   #pointComponent = null;
   #pointEditComponent = null;
 
-  constructor({listComponent}) {
-    this.#listComponent = listComponent;
-  }
+  #handleDataChange = null;
 
-  init({point, offers, destinations}) {
-    this.#point = point;
+  constructor({listComponent, offers, destinations, onDataChange}) {
+    this.#listComponent = listComponent;
     this.#offers = offers;
     this.#destinations = destinations;
+    this.#handleDataChange = onDataChange;
+  }
+
+  init(point) {
+    this.#point = point;
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
@@ -26,22 +29,16 @@ export default class PointPresenter {
       point: this.#point,
       offers: this.#offers,
       destinations: this.#destinations,
-      onEditClick: () => {
-        this.#replaceRoutPointToEditForm();
-      }
+      onEditClick: this.#handleEditClick,
+      onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#pointEditComponent = new EditRoutFormView ({
       point: this.#point,
       offers: this.#offers,
       destinations: this.#destinations,
-      onFormSubmit: () => {
-        this.#replaceEditFormToRoutPoint();
-
-      },
-      onRollUpClick: () => {
-        this.#replaceEditFormToRoutPoint();
-      }
+      onFormSubmit: this.#handleSubmitForm,
+      onRollUpClick: this.#handleSubmitForm
     });
 
     if(prevPointComponent === null || prevPointEditComponent === null) {
@@ -65,7 +62,6 @@ export default class PointPresenter {
     remove(this.#pointEditComponent);
   }
 
-
   #escKeyDownHandler (evt) {
     if(evt.key === 'Escape') {
       evt.preventDefault();
@@ -83,4 +79,16 @@ export default class PointPresenter {
     replace(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
+
+  #handleSubmitForm = () => {
+    this.#replaceEditFormToRoutPoint();
+  };
+
+  #handleEditClick = () => {
+    this.#replaceRoutPointToEditForm();
+  };
+
+  #handleFavoriteClick = () => {
+    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+  };
 }
