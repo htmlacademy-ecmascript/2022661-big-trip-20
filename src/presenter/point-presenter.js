@@ -2,6 +2,11 @@ import {render, replace, remove} from '../framework/render';
 import EditRoutFormView from '../view/edit-rout-form-view';
 import RoutPointView from '../view/route-point-view';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class PointPresenter {
   #listComponent = null;
   #point = null;
@@ -11,12 +16,16 @@ export default class PointPresenter {
   #pointEditComponent = null;
 
   #handleDataChange = null;
+  #handleModeChange = null;
 
-  constructor({listComponent, offers, destinations, onDataChange}) {
+  #mode = Mode.DEFAULT;
+
+  constructor({listComponent, offers, destinations, onDataChange, onModeChange}) {
     this.#listComponent = listComponent;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   init(point) {
@@ -43,13 +52,14 @@ export default class PointPresenter {
 
     if(prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#listComponent);
+      return;
     }
 
-    if(this.#listComponent.contains(prevPointComponent?.element)) {
+    if(this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if(this.#listComponent.contains(prevPointEditComponent?.element)) {
+    if(this.#mode === Mode.EDITING) {
       replace(this.#pointComponent, prevPointEditComponent);
     }
 
@@ -60,6 +70,12 @@ export default class PointPresenter {
   destroy() {
     remove(this.#pointComponent);
     remove(this.#pointEditComponent);
+  }
+
+  resetView () {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceEditFormToRoutPoint();
+    }
   }
 
   #escKeyDownHandler (evt) {
@@ -73,11 +89,14 @@ export default class PointPresenter {
   #replaceRoutPointToEditForm() {
     replace(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceEditFormToRoutPoint() {
     replace(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
   }
 
   #handleSubmitForm = () => {

@@ -28,17 +28,13 @@ export default class EventPresenter {
     this.#renderEventsBoard();
   }
 
-  #handlePointChange = (updatePoint) => {
-    this.#eventPoints = updateItem(this.#eventPoints, updatePoint);
-    this.#pointPresenters.get(updatePoint.id).init(updatePoint);
-  };
-
   #renderPoint(point, offers, destinations) {
     const pointPresenter = new PointPresenter({
       listComponent: this.#listComponent.element,
       offers: offers,
       destinations: destinations,
       onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange
     });
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
@@ -53,25 +49,6 @@ export default class EventPresenter {
       );
     });
   }
-
-  // #renderPoint({point, offers, destinations}) {
-  //   const pointPresenter = new PointPresenter({
-  //     listComponent: this.#listComponent.element,
-  //     onDataChange: this.#handlePointChange,
-  //   });
-  //   pointPresenter.init({point, offers, destinations});
-  //   this.#pointPresenters.set(point.id, pointPresenter);
-  // }
-
-  // #renderPoints() {
-  //   this.#eventPoints.forEach((point) => {
-  //     this.#renderPoint({
-  //       point,
-  //       offers: this.#offersModel.getOffersByType(point.type),
-  //       destinations: this.#destinationsModel.getDestinationById(point.destination)
-  //     });
-  //   });
-  // }
 
   #renderPointsList() {
     render(this.#listComponent, this.#eventContainer);
@@ -95,4 +72,13 @@ export default class EventPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
   }
+
+  #handlePointChange = (updatePoint) => {
+    this.#eventPoints = updateItem(this.#eventPoints, updatePoint);
+    this.#pointPresenters.get(updatePoint.id).init(updatePoint);
+  };
+
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
 }
