@@ -1,6 +1,6 @@
 import { POINT_TYPES, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID,MAX_DESTINATION_ID } from '../const';
 import { getRandomArrayElement, getRandomNumber } from '../utils/common';
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 
 const mockRoutPoints = [
   {

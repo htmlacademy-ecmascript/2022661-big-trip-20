@@ -1,5 +1,7 @@
 import {render} from '../framework/render';
 import { updateItem } from '../utils/common';
+import { sort } from '../utils/sort';
+import { SORT_TYPES } from '../const';
 import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
@@ -15,6 +17,9 @@ export default class EventPresenter {
   #destinationsModel = null;
   #offersModel = null;
 
+  #sortComponent = null;
+  #currentSortType = SORT_TYPES.DAY;
+
   constructor({eventContainer, pointsModel ,offersModel, destinationsModel}) {
     this.#eventContainer = eventContainer;
     this.#pointsModel = pointsModel;
@@ -23,7 +28,7 @@ export default class EventPresenter {
   }
 
   init() {
-    this.#eventPoints = [...this.#pointsModel.points];
+    this.#eventPoints = sort[SORT_TYPES.DAY]([...this.#pointsModel.points]);
 
     this.#renderEventsBoard();
   }
@@ -59,11 +64,18 @@ export default class EventPresenter {
     render(new EmptyListMessage(), this.#eventContainer);
   }
 
+  #renderSortList() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange,
+    });
+    render(this.#sortComponent, this.#eventContainer);
+  }
+
   #renderEventsBoard() {
     if (!this.#eventPoints.length) {
       this.#renderEmptyList();
     } else {
-      render(new SortView(), this.#eventContainer);
+      this.#renderSortList();
       this.#renderPointsList();
     }
   }
@@ -73,6 +85,11 @@ export default class EventPresenter {
     this.#pointPresenters.clear();
   }
 
+  #sortPoints(sortType) {
+    this.#currentSortType = sortType;
+    this.#eventPoints = sort[this.#currentSortType](this.#eventPoints);
+  }
+
   #handlePointChange = (updatePoint) => {
     this.#eventPoints = updateItem(this.#eventPoints, updatePoint);
     this.#pointPresenters.get(updatePoint.id).init(updatePoint);
@@ -80,5 +97,15 @@ export default class EventPresenter {
 
   #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if(this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortPoints(sortType);
+    this.#clearPointsList();
+    this.#renderPoints();
   };
 }

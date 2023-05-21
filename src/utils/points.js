@@ -62,4 +62,21 @@ function isPointDateInPresent(startDate, endDate) {
   return startIsSameOrBeforeToday && endIsSameOrAfterToday;
 }
 
-export { humanizeEventDate, countTimeDuration, isPointDateExpired, isPointDateInFuture, isPointDateInPresent, FULL_DATE_FORMAT, DATE_FORMAT, TIME_FORMAT };
+function getDataDifference(pointA, pointB) {
+  return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+}
+
+function getTimeDifference(pointA, pointB) {
+  const pointAdifference = dayjs(pointA.dateTo).diff(pointA.dateFrom);
+  const pointBdifference = dayjs(pointB.dateTo).diff(pointB.dateFrom);
+
+  const difference = pointBdifference - pointAdifference;
+
+  return difference;
+}
+
+function getPriceDifference(pointA, pointB) {
+  return pointB.basePrice - pointA.basePrice;
+}
+
+export { humanizeEventDate, countTimeDuration, isPointDateExpired, isPointDateInFuture, isPointDateInPresent, FULL_DATE_FORMAT, DATE_FORMAT, TIME_FORMAT, getDataDifference, getTimeDifference, getPriceDifference };
