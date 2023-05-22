@@ -19,7 +19,6 @@ function createFilterItemTemplate(filter, isChecked) {
 }
 
 function createFiltersTemplate(filters) {
-
   const filterItemsTemplate = filters
     .map((filter, index) => createFilterItemTemplate(filter, index === 0))
     .join('');
