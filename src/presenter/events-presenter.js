@@ -33,11 +33,13 @@ export default class EventPresenter {
     this.#renderEventsBoard();
   }
 
-  #renderPoint(point, offers, destinations) {
+  #renderPoint(point, offersByType, destinationById, allOffers, allDestinations) {
     const pointPresenter = new PointPresenter({
       listComponent: this.#listComponent.element,
-      offers: offers,
-      destinations: destinations,
+      offersByType: offersByType,
+      destinationById: destinationById,
+      allOffers: allOffers,
+      allDestinations: allDestinations,
       onDataChange: this.#handlePointChange,
       onModeChange: this.#handleModeChange
     });
@@ -50,7 +52,9 @@ export default class EventPresenter {
       this.#renderPoint(
         point,
         this.#offersModel.getOffersByType(point.type),
-        this.#destinationsModel.getDestinationById(point.destination)
+        this.#destinationsModel.getDestinationById(point.destination),
+        this.#offersModel.offers,
+        this.#destinationsModel.destinations,
       );
     });
   }

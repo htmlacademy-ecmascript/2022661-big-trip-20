@@ -10,8 +10,10 @@ const Mode = {
 export default class PointPresenter {
   #listComponent = null;
   #point = null;
-  #offers = null;
-  #destinations = null;
+  #allOffers = null;
+  #allDestinations = null;
+  #offersByType = null;
+  #destinationById = null;
   #pointComponent = null;
   #pointEditComponent = null;
 
@@ -20,10 +22,12 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor({listComponent, offers, destinations, onDataChange, onModeChange}) {
+  constructor({listComponent, offersByType, destinationById, allOffers, allDestinations, onDataChange, onModeChange}) {
     this.#listComponent = listComponent;
-    this.#offers = offers;
-    this.#destinations = destinations;
+    this.#offersByType = offersByType;
+    this.#destinationById = destinationById;
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
   }
@@ -36,18 +40,18 @@ export default class PointPresenter {
 
     this.#pointComponent = new RoutPointView({
       point: this.#point,
-      offers: this.#offers,
-      destinations: this.#destinations,
+      offers: this.#offersByType,
+      destinations: this.#destinationById,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#pointEditComponent = new EditRoutFormView ({
       point: this.#point,
-      offers: this.#offers,
-      destinations: this.#destinations,
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations,
       onFormSubmit: this.#handleSubmitForm,
-      onRollUpClick: this.#handleSubmitForm
+      onRollUpClick: this.#handleRollDownClick
     });
 
     if(prevPointComponent === null || prevPointEditComponent === null) {
@@ -74,6 +78,7 @@ export default class PointPresenter {
 
   resetView () {
     if (this.#mode !== Mode.DEFAULT) {
+      // this.#pointEditComponent.reset(this.#point);
       this.#replaceEditFormToRoutPoint();
     }
   }
@@ -81,7 +86,7 @@ export default class PointPresenter {
   #escKeyDownHandler (evt) {
     if(evt.key === 'Escape') {
       evt.preventDefault();
-      this.#replaceEditFormToRoutPoint();
+      // this.#pointEditComponent.reset(this.#point);
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   }
@@ -99,7 +104,12 @@ export default class PointPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
-  #handleSubmitForm = () => {
+  #handleRollDownClick = () => {
+    this.#replaceEditFormToRoutPoint();
+  };
+
+  #handleSubmitForm = (point) => {
+    this.#handleDataChange(point);
     this.#replaceEditFormToRoutPoint();
   };
 

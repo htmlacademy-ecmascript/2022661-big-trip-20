@@ -1,23 +1,47 @@
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINT_TYPES } from '../const';
 import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 
-function createEditRoutFormTemplate (point, offersByType, destinationById) {
-  const {basePrice, dateFrom, dateTo, offers, type} = point;
+function createTypesChooserTemplate(pointTypes) {
+  return Object.values(pointTypes)
+    .map((item) => /*html*/ `
+      <div class="event__type-item">
+        <input id="event-type-${item.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${item.toLowerCase()}">
+        <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1">${item}</label>
+      </div>
+    `)
+    .join('');
+}
+
+function createDestinationDescriptionTemplate(myDestination) {
+  const { pictures, description } = myDestination;
+
+  const destinationPictures = pictures
+    .map((picture) => /*html*/ `
+      <img class="event__photo" src="${picture.src}" alt="${picture.alt}">
+    `
+    )
+    .join('');
+
+  return /*html*/ `
+    <p class="event__destination-description">${description}</p>
+
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${destinationPictures}
+      </div>
+    </div>
+  `;
+}
+
+function createEditRoutFormTemplate (point, allOffers, allDestinations) {
+  const {basePrice, dateFrom, dateTo, offers, type, destination} = point;
 
   const timeFrom = humanizeEventDate(dateFrom, FULL_DATE_FORMAT);
   const timeTo = humanizeEventDate(dateTo, FULL_DATE_FORMAT);
 
-  function createTypesChooserTemplate(pointTypes) {
-    return Object.values(pointTypes)
-      .map((item) => /*html*/ `
-        <div class="event__type-item">
-          <input id="event-type-${item.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${item.toLowerCase()}">
-          <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1">${item}</label>
-        </div>
-      `)
-      .join('');
-  }
+  const offersByType = allOffers.find((item) => item.type === type).offers;
+  const destinationById = allDestinations.find((itemDestination) => itemDestination.id === destination);
 
   function createOffersTemplate() {
     return offersByType
@@ -26,8 +50,8 @@ function createEditRoutFormTemplate (point, offersByType, destinationById) {
 
         return /*html*/ `
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-1" type="checkbox" name="event-offer-${offer.title}" ${checked}>
-            <label class="event__offer-label" for="event-offer-${offer.title}-1">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${offer.id}" data-offer-id="${offer.id}" type="checkbox" name="event-offer-${offer.title}" ${checked}>
+            <label class="event__offer-label" for="event-offer-${offer.title}-${offer.id}">
               <span class="event__offer-title">${offer.title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${offer.price}</span>
@@ -38,25 +62,12 @@ function createEditRoutFormTemplate (point, offersByType, destinationById) {
       .join('');
   }
 
-  function createDestinationDescriptionTemplate(myDestination) {
-    const { pictures, description } = myDestination;
-
-    const destinationPictures = pictures
-      .map((picture) => /*html*/ `
-        <img class="event__photo" src="${picture.src}" alt="${picture.alt}">
-      `
+  function createDestinationsListTemplate() {
+    return allDestinations
+      .map((item) => `
+        <option value="${item.name}"></option>`
       )
       .join('');
-
-    return /*html*/ `
-      <p class="event__destination-description">${description}</p>
-
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${destinationPictures}
-        </div>
-      </div>
-    `;
   }
 
   return /*html*/`
@@ -84,10 +95,8 @@ function createEditRoutFormTemplate (point, offersByType, destinationById) {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationById.name}" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
-            </datalist>
+              ${createDestinationsListTemplate()}
+             </datalist>
           </div>
 
           <div class="event__field-group  event__field-group--time">
@@ -130,40 +139,88 @@ function createEditRoutFormTemplate (point, offersByType, destinationById) {
   `;
 }
 
-export default class EditRoutFormView extends AbstractView {
-  #point = null;
-  #offers = null;
-  #destinations = null;
+export default class EditRoutFormView extends AbstractStatefulView {
+  #allOffers = null;
+  #allDestinations = null;
   #handleFormSubmit = null;
   #handleRollUpClick = null;
 
-  constructor({point, offers, destinations, onFormSubmit, onRollUpClick}) {
+  constructor({point, allOffers, allDestinations, onFormSubmit, onRollUpClick}) {
     super();
 
-    this.#point = point;
-    this.#offers = offers;
-    this.#destinations = destinations;
+    this._setState(EditRoutFormView.parsePointToState(point));
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleRollUpClick = onRollUpClick;
 
+    this._restoreHandlers();
+  }
+
+  get template() {
+    return createEditRoutFormTemplate(this._state, this.#allOffers, this.#allDestinations);
+  }
+
+  reset(point) {
+    this.updateElement(
+      EditRoutFormView.parsePointToState(point),
+    );
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#rollUpButtonClick);
-  }
 
-  get template() {
-    return createEditRoutFormTemplate(this.#point, this.#offers, this.#destinations);
+    this.element.querySelector('.event__type-group')
+      .addEventListener('click', this.#chooseTypeHandler);
+
+    this.element.querySelector('.event__available-offers')
+      .addEventListener('click', this.#offersClickHandler);
+
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#chooseDestinationHandler);
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(EditRoutFormView.parseStateToPoint(this._state));
   };
 
   #rollUpButtonClick = (evt) => {
     evt.preventDefault();
     this.#handleRollUpClick();
   };
+
+  #chooseTypeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type : evt.target.textContent,
+      offers: []
+    });
+  };
+
+  #chooseDestinationHandler = (evt) => {
+    console.log(evt.target.value);
+  };
+
+  #offersClickHandler = () => {
+    const choosenOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+
+    const offersId = choosenOffers.map((offer) => offer.dataset.offerId);
+
+    this._setState({
+      offers: offersId,
+    });
+  };
+
+  static parsePointToState(point) {
+    return {...point};
+  }
+
+  static parseStateToPoint(state) {
+    return {...state};
+  }
 }
