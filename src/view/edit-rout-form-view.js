@@ -65,7 +65,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations) {
   function createDestinationsListTemplate() {
     return allDestinations
       .map((item) => `
-        <option value="${item.name}"></option>`
+        <option value="${item.name}" data-destination-id="${item.id}"></option>`
       )
       .join('');
   }
@@ -112,7 +112,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -182,6 +182,9 @@ export default class EditRoutFormView extends AbstractStatefulView {
 
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#chooseDestinationHandler);
+
+    this.element.querySelector('.event__input--price')
+      .addEventListener('change', this.#inputPriceHandler);
   }
 
   #formSubmitHandler = (evt) => {
@@ -203,7 +206,14 @@ export default class EditRoutFormView extends AbstractStatefulView {
   };
 
   #chooseDestinationHandler = (evt) => {
-    console.log(evt.target.value);
+    const newDestinationName = evt.target.value;
+    const newDestination = this.#allDestinations.find((item) => item.name === newDestinationName);
+
+    if(newDestination) {
+      this.updateElement({
+        destination: newDestination.id,
+      });
+    }
   };
 
   #offersClickHandler = () => {
@@ -213,6 +223,12 @@ export default class EditRoutFormView extends AbstractStatefulView {
 
     this._setState({
       offers: offersId,
+    });
+  };
+
+  #inputPriceHandler = (evt) => {
+    this._setState({
+      basePrice: evt.target.value,
     });
   };
 

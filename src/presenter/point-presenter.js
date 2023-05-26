@@ -64,7 +64,7 @@ export default class PointPresenter {
     }
 
     if(this.#mode === Mode.EDITING) {
-      replace(this.#pointComponent, prevPointEditComponent);
+      replace(this.#pointEditComponent, prevPointEditComponent);
     }
 
     remove(prevPointComponent);
@@ -78,18 +78,18 @@ export default class PointPresenter {
 
   resetView () {
     if (this.#mode !== Mode.DEFAULT) {
-      // this.#pointEditComponent.reset(this.#point);
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceEditFormToRoutPoint();
     }
   }
 
-  #escKeyDownHandler (evt) {
+  #escKeyDownHandler = (evt) => {
     if(evt.key === 'Escape') {
       evt.preventDefault();
-      // this.#pointEditComponent.reset(this.#point);
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this.#pointEditComponent.reset(this.#point);
+      this.#replaceEditFormToRoutPoint();
     }
-  }
+  };
 
   #replaceRoutPointToEditForm() {
     replace(this.#pointEditComponent, this.#pointComponent);
@@ -105,6 +105,7 @@ export default class PointPresenter {
   }
 
   #handleRollDownClick = () => {
+    this.#pointEditComponent.reset(this.#point);
     this.#replaceEditFormToRoutPoint();
   };
 
