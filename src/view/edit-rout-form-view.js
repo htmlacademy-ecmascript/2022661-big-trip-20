@@ -7,7 +7,7 @@ function createTypesChooserTemplate(pointTypes) {
     .map((item) => /*html*/ `
       <div class="event__type-item">
         <input id="event-type-${item.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${item.toLowerCase()}">
-        <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1">${item}</label>
+        <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1" data-type=${item}>${item}</label>
       </div>
     `)
     .join('');
@@ -19,8 +19,7 @@ function createDestinationDescriptionTemplate(myDestination) {
   const destinationPictures = pictures
     .map((picture) => /*html*/ `
       <img class="event__photo" src="${picture.src}" alt="${picture.alt}">
-    `
-    )
+    `)
     .join('');
 
   return /*html*/ `
@@ -200,7 +199,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #chooseTypeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      type : evt.target.textContent,
+      type : evt.target.dataset.type,
       offers: []
     });
   };

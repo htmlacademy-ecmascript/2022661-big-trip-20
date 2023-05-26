@@ -8,12 +8,11 @@ const Mode = {
 };
 
 export default class PointPresenter {
-  #listComponent = null;
   #point = null;
-  #allOffers = null;
-  #allDestinations = null;
-  #offersByType = null;
-  #destinationById = null;
+  #offersModel = null;
+  #destinationModel = null;
+
+  #listComponent = null;
   #pointComponent = null;
   #pointEditComponent = null;
 
@@ -22,12 +21,11 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor({listComponent, offersByType, destinationById, allOffers, allDestinations, onDataChange, onModeChange}) {
+  constructor({listComponent, offersModel, destinationModel, onDataChange, onModeChange}) {
     this.#listComponent = listComponent;
-    this.#offersByType = offersByType;
-    this.#destinationById = destinationById;
-    this.#allOffers = allOffers;
-    this.#allDestinations = allDestinations;
+    this.#offersModel = offersModel;
+    this.#destinationModel = destinationModel;
+
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
   }
@@ -40,16 +38,16 @@ export default class PointPresenter {
 
     this.#pointComponent = new RoutPointView({
       point: this.#point,
-      offers: this.#offersByType,
-      destinations: this.#destinationById,
+      offers: this.#offersModel.getOffersByType(this.#point.type),
+      destinations: this.#destinationModel.getDestinationById(point.destination),
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#pointEditComponent = new EditRoutFormView ({
       point: this.#point,
-      allOffers: this.#allOffers,
-      allDestinations: this.#allDestinations,
+      allOffers: this.#offersModel.offers,
+      allDestinations: this.#destinationModel.destinations,
       onFormSubmit: this.#handleSubmitForm,
       onRollUpClick: this.#handleRollDownClick
     });
