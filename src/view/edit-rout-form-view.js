@@ -2,6 +2,9 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINT_TYPES } from '../const';
 import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+
 function createTypesChooserTemplate(pointTypes) {
   return Object.values(pointTypes)
     .map((item) => /*html*/ `
@@ -143,6 +146,8 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #allDestinations = null;
   #handleFormSubmit = null;
   #handleRollUpClick = null;
+  #datePickerFrom = null;
+  #datePickerTo = null;
 
   constructor({point, allOffers, allDestinations, onFormSubmit, onRollUpClick}) {
     super();
@@ -158,6 +163,20 @@ export default class EditRoutFormView extends AbstractStatefulView {
 
   get template() {
     return createEditRoutFormTemplate(this._state, this.#allOffers, this.#allDestinations);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if(this.#datePickerFrom) {
+      this.#datePickerFrom.destroy();
+      this.#datePickerFrom = null;
+    }
+
+    if(this.#datePickerTo) {
+      this.#datePickerTo.destroy();
+      this.#datePickerTo = null;
+    }
   }
 
   reset(point) {
@@ -184,7 +203,58 @@ export default class EditRoutFormView extends AbstractStatefulView {
 
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#inputPriceHandler);
+
+    this.#setDatePicker();
   }
+
+  #setDatePicker() {
+
+    const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
+
+    this.#datePickerFrom = flatpickr(
+      dateFromElement,
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        onChange: this.#dateFromChangeHandler,
+        enableTime: true,
+        locale: {
+          firstDayOfWeek: 1,
+        },
+        'time_24hr': true
+      }
+    );
+
+    this.#datePickerTo = flatpickr(
+      dateToElement,
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        onChange: this.#dateToChangeHandler,
+        enableTime: true,
+        minDate: this._state.dateFrom,
+        locale: {
+          firstDayOfWeek: 1,
+        },
+        'time_24hr': true
+      }
+    );
+  }
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this._setState({
+      dateFrom: userDate
+    });
+    this.#datePickerTo.set('minDate', this._state.dateFrom);
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this._setState({
+      dateTo: userDate
+    });
+    this.#datePickerFrom.set('maxDate', this._state.dateTo);
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
