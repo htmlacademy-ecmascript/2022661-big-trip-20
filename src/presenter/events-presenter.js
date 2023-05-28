@@ -33,11 +33,11 @@ export default class EventPresenter {
     this.#renderEventsBoard();
   }
 
-  #renderPoint(point, offers, destinations) {
+  #renderPoint(point, offersModel, destinationModel) {
     const pointPresenter = new PointPresenter({
       listComponent: this.#listComponent.element,
-      offers: offers,
-      destinations: destinations,
+      offersModel: offersModel,
+      destinationModel: destinationModel,
       onDataChange: this.#handlePointChange,
       onModeChange: this.#handleModeChange
     });
@@ -49,8 +49,8 @@ export default class EventPresenter {
     this.#eventPoints.forEach((point) => {
       this.#renderPoint(
         point,
-        this.#offersModel.getOffersByType(point.type),
-        this.#destinationsModel.getDestinationById(point.destination)
+        this.#offersModel,
+        this.#destinationsModel,
       );
     });
   }
