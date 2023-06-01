@@ -25,6 +25,18 @@ const SORT_TYPES = {
   OFFERS: 'offers',
 };
 
+const UserAction = {
+  UPDATE_TASK: 'UPDATE_TASK',
+  ADD_TASK: 'ADD_TASK',
+  DELETE_TASK: 'DELETE_TASK',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 const DESCRIPTION = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra.',
@@ -41,4 +53,4 @@ const MAX_PRICE = 5000;
 const MIN_DESTINATION_ID = 1;
 const MAX_DESTINATION_ID = 4;
 
-export {POINT_TYPES, DESCRIPTION, PHOTO_URL, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID, MAX_DESTINATION_ID, FILTER_TYPES, SORT_TYPES};
+export {POINT_TYPES, DESCRIPTION, PHOTO_URL, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID, MAX_DESTINATION_ID, FILTER_TYPES, SORT_TYPES, UserAction, UpdateType};

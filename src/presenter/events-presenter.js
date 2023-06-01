@@ -1,7 +1,6 @@
 import {render} from '../framework/render';
-import { updateItem } from '../utils/common';
 import { sort } from '../utils/sort';
-import { SORT_TYPES } from '../const';
+import { SORT_TYPES, UpdateType, UserAction } from '../const';
 import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
@@ -9,7 +8,6 @@ import PointPresenter from './point-presenter';
 
 export default class EventPresenter {
   #listComponent = new ListView();
-  #eventPoints = [];
   #pointPresenters = new Map();
 
   #eventContainer = null;
@@ -25,11 +23,15 @@ export default class EventPresenter {
     this.#pointsModel = pointsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
+
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+  }
+
+  get points() {
+    return sort[this.#currentSortType]([...this.#pointsModel.points]);
   }
 
   init() {
-    this.#eventPoints = sort[SORT_TYPES.DAY]([...this.#pointsModel.points]);
-
     this.#renderEventsBoard();
   }
 
@@ -38,15 +40,15 @@ export default class EventPresenter {
       listComponent: this.#listComponent.element,
       offersModel: offersModel,
       destinationModel: destinationModel,
-      onDataChange: this.#handlePointChange,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange
     });
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #renderPoints() {
-    this.#eventPoints.forEach((point) => {
+  #renderPoints(points) {
+    points.forEach((point) => {
       this.#renderPoint(
         point,
         this.#offersModel,
@@ -57,7 +59,7 @@ export default class EventPresenter {
 
   #renderPointsList() {
     render(this.#listComponent, this.#eventContainer);
-    this.#renderPoints();
+    this.#renderPoints(this.points);
   }
 
   #renderEmptyList() {
@@ -72,7 +74,7 @@ export default class EventPresenter {
   }
 
   #renderEventsBoard() {
-    if (!this.#eventPoints.length) {
+    if (!this.points.length) {
       this.#renderEmptyList();
     } else {
       this.#renderSortList();
@@ -85,18 +87,37 @@ export default class EventPresenter {
     this.#pointPresenters.clear();
   }
 
-  #sortPoints(sortType) {
-    this.#currentSortType = sortType;
-    this.#eventPoints = sort[this.#currentSortType](this.#eventPoints);
-  }
-
-  #handlePointChange = (updatePoint) => {
-    this.#eventPoints = updateItem(this.#eventPoints, updatePoint);
-    this.#pointPresenters.get(updatePoint.id).init(updatePoint);
-  };
 
   #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_TASK:
+        this.#pointsModel.updatePoint(updateType, update);
+        break;
+      case UserAction.ADD_TASK:
+        this.#pointsModel.addPoint(updateType, update);
+        break;
+      case UserAction.DELETE_TASK:
+        this.#pointsModel.deletePoint(updateType, update);
+        break;
+    }
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#pointPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        // - обновить список (например, когда задача ушла в архив)
+        break;
+      case UpdateType.MAJOR:
+        // - обновить всю доску (например, при переключении фильтра)
+        break;
+    }
   };
 
   #handleSortTypeChange = (sortType) => {
@@ -104,8 +125,8 @@ export default class EventPresenter {
       return;
     }
 
-    this.#sortPoints(sortType);
+    this.#currentSortType = sortType;
     this.#clearPointsList();
-    this.#renderPoints();
+    this.#renderPoints(this.points);
   };
 }
