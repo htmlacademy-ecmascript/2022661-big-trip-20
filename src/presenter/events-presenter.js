@@ -1,4 +1,4 @@
-import {render} from '../framework/render';
+import {remove, render} from '../framework/render';
 import { sort } from '../utils/sort';
 import { SORT_TYPES, UpdateType, UserAction } from '../const';
 import ListView from '../view/list-view';
@@ -14,6 +14,8 @@ export default class EventPresenter {
   #pointsModel = null;
   #destinationsModel = null;
   #offersModel = null;
+
+  #emptyListComponent = null;
 
   #sortComponent = null;
   #currentSortType = SORT_TYPES.DAY;
@@ -63,7 +65,8 @@ export default class EventPresenter {
   }
 
   #renderEmptyList() {
-    render(new EmptyListMessage(), this.#eventContainer);
+    this.#emptyListComponent = new EmptyListMessage();
+    render(this.#emptyListComponent, this.#eventContainer);
   }
 
   #renderSortList() {
@@ -82,9 +85,16 @@ export default class EventPresenter {
     }
   }
 
-  #clearPointsList() {
+  #clearBoard({resetSortType = false} = {}) {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+
+    remove(this.#sortComponent);
+    remove(this.#emptyListComponent);
+
+    if(resetSortType) {
+      this.#currentSortType = SORT_TYPES.DAY;
+    }
   }
 
 
@@ -112,10 +122,13 @@ export default class EventPresenter {
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
+        this.#clearBoard();
+        debugger
+        this.#renderEventsBoard();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
+        this.#clearBoard({resetSortType: true});
+        this.#renderEventsBoard();
         break;
     }
   };
@@ -126,7 +139,7 @@ export default class EventPresenter {
     }
 
     this.#currentSortType = sortType;
-    this.#clearPointsList();
-    this.#renderPoints(this.points);
+    this.#clearBoard();
+    this.#renderEventsBoard();
   };
 }
