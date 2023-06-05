@@ -12,12 +12,6 @@ const enebledSortType = {
 function createSortItemTemplate(sortType, currentSortType) {
   const {type , isDisabled} = sortType;
 
-  let isChecked;
-
-  if (type === currentSortType) {
-    isChecked = true;
-  }
-
   return /*html*/ `
     <div class="trip-sort__item  trip-sort__item--${type}">
       <input
@@ -27,7 +21,7 @@ function createSortItemTemplate(sortType, currentSortType) {
         type="radio"
         name="trip-sort"
         value="sort-${type}"
-        ${isChecked ? 'checked' : ''}
+        ${type === currentSortType ? 'checked' : ''}
         ${isDisabled ? 'disabled' : ''}
       >
       <label class="trip-sort__btn" for="sort-${type}">${type}</label>

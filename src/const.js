@@ -11,10 +11,10 @@ const POINT_TYPES = {
 };
 
 const FILTER_TYPES = {
-  EVERYTHING: 'Everything',
-  FUTURE: 'Future',
-  PRESENT: 'Present',
-  PAST: 'Past',
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
 };
 
 const SORT_TYPES = {
