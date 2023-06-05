@@ -2,6 +2,7 @@ import {render, replace, remove} from '../framework/render';
 import EditRoutFormView from '../view/edit-rout-form-view';
 import RoutPointView from '../view/route-point-view';
 import { UserAction, UpdateType } from '../const';
+import { isDateEqual, isPriceEqual } from '../utils/points';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -50,6 +51,7 @@ export default class PointPresenter {
       allOffers: this.#offersModel.offers,
       allDestinations: this.#destinationModel.destinations,
       onFormSubmit: this.#handleSubmitForm,
+      onDeleteClick: this.#handleDeleteClick,
       onRollUpClick: this.#handleRollDownClick
     });
 
@@ -108,13 +110,23 @@ export default class PointPresenter {
     this.#replaceEditFormToRoutPoint();
   };
 
-  #handleSubmitForm = (point) => {
+  #handleSubmitForm = (update) => {
+    const isMinorUpdate = !isDateEqual(this.#point.dateFrom , update.dateFrom) || !isDateEqual(this.#point.dateTo , update.dateTo) || !isPriceEqual(this.#point.dateFrom , update.dateFrom);
+
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update
+    );
+    this.#replaceEditFormToRoutPoint();
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
       UpdateType.MINOR,
       point
     );
-    this.#replaceEditFormToRoutPoint();
   };
 
   #handleEditClick = () => {
@@ -123,7 +135,7 @@ export default class PointPresenter {
 
   #handleFavoriteClick = () => {
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_POINT,
       UpdateType.PATCH,
       {...this.#point, isFavorite: !this.#point.isFavorite},
     );

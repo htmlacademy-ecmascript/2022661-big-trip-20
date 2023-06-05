@@ -146,16 +146,18 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #allDestinations = null;
   #handleFormSubmit = null;
   #handleRollUpClick = null;
+  #handleDeleteClick = null;
   #datePickerFrom = null;
   #datePickerTo = null;
 
-  constructor({point, allOffers, allDestinations, onFormSubmit, onRollUpClick}) {
+  constructor({point, allOffers, allDestinations, onFormSubmit, onDeleteClick, onRollUpClick}) {
     super();
 
     this._setState(EditRoutFormView.parsePointToState(point));
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleDeleteClick = onDeleteClick;
     this.#handleRollUpClick = onRollUpClick;
 
     this._restoreHandlers();
@@ -188,6 +190,9 @@ export default class EditRoutFormView extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#deleteClick);
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#rollUpButtonClick);
@@ -259,6 +264,11 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit(EditRoutFormView.parseStateToPoint(this._state));
+  };
+
+  #deleteClick = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditRoutFormView.parseStateToPoint(this._state));
   };
 
   #rollUpButtonClick = (evt) => {
