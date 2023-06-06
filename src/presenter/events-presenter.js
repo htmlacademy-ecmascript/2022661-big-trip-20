@@ -6,6 +6,7 @@ import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
 import PointPresenter from './point-presenter';
 import { filter } from '../utils/filter';
+import { FILTER_TYPES } from '../const';
 
 export default class EventPresenter {
   #listComponent = new ListView();
@@ -21,6 +22,7 @@ export default class EventPresenter {
 
   #sortComponent = null;
   #currentSortType = SORT_TYPES.DAY;
+  #filterType = FILTER_TYPES.EVERYTHING;
 
   constructor({eventContainer, pointsModel ,offersModel, destinationsModel, filterModel}) {
     this.#eventContainer = eventContainer;
@@ -34,10 +36,10 @@ export default class EventPresenter {
   }
 
   get points() {
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const points = this.#pointsModel.points;
 
-    const filteredPoints = filter[filterType](points);
+    const filteredPoints = filter[this.#filterType](points);
 
     return sort[this.#currentSortType](filteredPoints);
   }
@@ -74,7 +76,9 @@ export default class EventPresenter {
   }
 
   #renderEmptyList() {
-    this.#emptyListComponent = new EmptyListMessage();
+    this.#emptyListComponent = new EmptyListMessage({
+      filterType : this.#filterType,
+    });
     render(this.#emptyListComponent, this.#eventContainer);
   }
 
@@ -100,7 +104,10 @@ export default class EventPresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
-    remove(this.#emptyListComponent);
+
+    if (this.#emptyListComponent) {
+      remove(this.#emptyListComponent);
+    }
 
     if(resetSortType) {
       this.#currentSortType = SORT_TYPES.DAY;
