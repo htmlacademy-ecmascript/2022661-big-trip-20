@@ -5,12 +5,14 @@ import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
 import PointPresenter from './point-presenter';
+import NewPointPresenter from './new-point-presenter';
 import { filter } from '../utils/filter';
 import { FILTER_TYPES } from '../const';
 
 export default class EventPresenter {
   #listComponent = new ListView();
   #pointPresenters = new Map();
+  #newPointPresenter = null;
 
   #eventContainer = null;
   #pointsModel = null;
@@ -31,6 +33,10 @@ export default class EventPresenter {
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
 
+    this.#newPointPresenter = new NewPointPresenter({
+      listComponent: this.#listComponent.element
+    });
+
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -46,6 +52,13 @@ export default class EventPresenter {
 
   init() {
     this.#renderEventsBoard();
+  }
+
+  createPoint() {
+    this.#currentSortType = SORT_TYPES.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FILTER_TYPES.EVERYTHING);
+
+    this.#newPointPresenter.init();
   }
 
   #renderPoint(point, offersModel, destinationModel) {
