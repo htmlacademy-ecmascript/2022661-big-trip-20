@@ -5,6 +5,7 @@ import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
 import PointPresenter from './point-presenter';
+import { filter } from '../utils/filter';
 
 export default class EventPresenter {
   #listComponent = new ListView();
@@ -14,23 +15,31 @@ export default class EventPresenter {
   #pointsModel = null;
   #destinationsModel = null;
   #offersModel = null;
+  #filterModel = null;
 
   #emptyListComponent = null;
 
   #sortComponent = null;
   #currentSortType = SORT_TYPES.DAY;
 
-  constructor({eventContainer, pointsModel ,offersModel, destinationsModel}) {
+  constructor({eventContainer, pointsModel ,offersModel, destinationsModel, filterModel}) {
     this.#eventContainer = eventContainer;
     this.#pointsModel = pointsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
+    this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
-    return sort[this.#currentSortType]([...this.#pointsModel.points]);
+    const filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+
+    const filteredPoints = filter[filterType](points);
+
+    return sort[this.#currentSortType](filteredPoints);
   }
 
   init() {

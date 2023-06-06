@@ -20,7 +20,8 @@ const eventPresenter = new EventPresenter({
   eventContainer : tripEventElement,
   pointsModel,
   offersModel,
-  destinationsModel
+  destinationsModel,
+  filterModel
 });
 
 const filterPresenter = new FilterPresenter({
