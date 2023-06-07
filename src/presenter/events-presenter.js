@@ -26,7 +26,7 @@ export default class EventPresenter {
   #currentSortType = SORT_TYPES.DAY;
   #filterType = FILTER_TYPES.EVERYTHING;
 
-  constructor({eventContainer, pointsModel ,offersModel, destinationsModel, filterModel}) {
+  constructor({eventContainer, pointsModel ,offersModel, destinationsModel, filterModel, onNewRoutPointClose}) {
     this.#eventContainer = eventContainer;
     this.#pointsModel = pointsModel;
     this.#destinationsModel = destinationsModel;
@@ -34,7 +34,11 @@ export default class EventPresenter {
     this.#filterModel = filterModel;
 
     this.#newPointPresenter = new NewPointPresenter({
-      listComponent: this.#listComponent.element
+      offersModel: this.#offersModel,
+      destinationModel: this.#destinationsModel,
+      listComponent: this.#listComponent.element,
+      onClose: onNewRoutPointClose,
+      onDataChange: this.#handleViewAction,
     });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -113,6 +117,7 @@ export default class EventPresenter {
   }
 
   #clearBoard({resetSortType = false} = {}) {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 

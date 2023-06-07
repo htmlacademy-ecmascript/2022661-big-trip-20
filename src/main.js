@@ -22,7 +22,8 @@ const eventPresenter = new EventPresenter({
   pointsModel,
   offersModel,
   destinationsModel,
-  filterModel
+  filterModel,
+  onNewRoutPointClose: handleNewPointBtnClose
 });
 
 const filterPresenter = new FilterPresenter({

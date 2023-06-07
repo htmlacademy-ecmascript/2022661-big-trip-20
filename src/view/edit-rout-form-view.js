@@ -5,6 +5,16 @@ import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
+
+const BLANK_POINT = {
+  basePrice: '',
+  dateFrom: '',
+  dateTo: '',
+  offers: [1],
+  type: POINT_TYPES.TAXI,
+  destination: '1'
+};
+
 function createTypesChooserTemplate(pointTypes) {
   return Object.values(pointTypes)
     .map((item) => /*html*/ `
@@ -150,7 +160,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #datePickerFrom = null;
   #datePickerTo = null;
 
-  constructor({point, allOffers, allDestinations, onFormSubmit, onDeleteClick, onRollUpClick}) {
+  constructor({point = BLANK_POINT, allOffers, allDestinations, onFormSubmit, onDeleteClick, onRollUpClick}) {
     super();
 
     this._setState(EditRoutFormView.parsePointToState(point));
