@@ -1,13 +1,9 @@
 import {render, replace, remove} from '../framework/render';
 import EditRoutFormView from '../view/edit-rout-form-view';
 import RoutPointView from '../view/route-point-view';
-import { UserAction, UpdateType } from '../const';
+import { UserAction, UpdateType, Mode } from '../const';
 import { isDateEqual, isPriceEqual } from '../utils/points';
 
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 
 export default class PointPresenter {
   #point = null;

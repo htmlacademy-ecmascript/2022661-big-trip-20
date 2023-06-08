@@ -17,6 +17,11 @@ const FILTER_TYPES = {
   PAST: 'past',
 };
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 const SORT_TYPES = {
   DAY: 'day',
   EVENT: 'event',
@@ -37,6 +42,11 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
+const POINT_CREATION_MODE = {
+  CREATING: 'CREATING',
+  EDITING: 'EDITING'
+};
+
 const DESCRIPTION = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra.',
@@ -53,4 +63,4 @@ const MAX_PRICE = 5000;
 const MIN_DESTINATION_ID = 1;
 const MAX_DESTINATION_ID = 4;
 
-export {POINT_TYPES, DESCRIPTION, PHOTO_URL, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID, MAX_DESTINATION_ID, FILTER_TYPES, SORT_TYPES, UserAction, UpdateType};
+export {POINT_TYPES, DESCRIPTION, PHOTO_URL, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID, MAX_DESTINATION_ID, FILTER_TYPES, SORT_TYPES, UserAction, UpdateType, POINT_CREATION_MODE, Mode};

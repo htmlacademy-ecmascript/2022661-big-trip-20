@@ -11,6 +11,9 @@ import { FILTER_TYPES } from '../const';
 
 export default class EventPresenter {
   #listComponent = new ListView();
+  #emptyListComponent = null;
+  #sortComponent = null;
+
   #pointPresenters = new Map();
   #newPointPresenter = null;
 
@@ -20,11 +23,11 @@ export default class EventPresenter {
   #offersModel = null;
   #filterModel = null;
 
-  #emptyListComponent = null;
-
-  #sortComponent = null;
   #currentSortType = SORT_TYPES.DAY;
   #filterType = FILTER_TYPES.EVERYTHING;
+  #isCreating = false;
+
+  #onNewRoutPointClose = null;
 
   constructor({eventContainer, pointsModel ,offersModel, destinationsModel, filterModel, onNewRoutPointClose}) {
     this.#eventContainer = eventContainer;
@@ -32,13 +35,15 @@ export default class EventPresenter {
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
+    this.#onNewRoutPointClose = onNewRoutPointClose;
 
     this.#newPointPresenter = new NewPointPresenter({
       offersModel: this.#offersModel,
       destinationModel: this.#destinationsModel,
       listComponent: this.#listComponent.element,
-      onClose: onNewRoutPointClose,
+      onClose: this.#closeNewPoint,
       onDataChange: this.#handleViewAction,
+
     });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -59,11 +64,23 @@ export default class EventPresenter {
   }
 
   createPoint() {
+    this.#isCreating = true;
     this.#currentSortType = SORT_TYPES.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FILTER_TYPES.EVERYTHING);
 
+    this.#handleModeChange();
     this.#newPointPresenter.init();
   }
+
+  #closeNewPoint = () => {
+    this.#isCreating = false;
+    this.#onNewRoutPointClose();
+    if(!this.points.length) {
+      this.#renderEmptyList();
+      remove(this.#sortComponent);
+      this.#sortComponent = null;
+    }
+  };
 
   #renderPoint(point, offersModel, destinationModel) {
     const pointPresenter = new PointPresenter({
@@ -108,7 +125,7 @@ export default class EventPresenter {
   }
 
   #renderEventsBoard() {
-    if (!this.points.length) {
+    if (!this.points.length && !this.#isCreating) {
       this.#renderEmptyList();
     } else {
       this.#renderSortList();
@@ -132,9 +149,11 @@ export default class EventPresenter {
     }
   }
 
-
   #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
+    if(this.#newPointPresenter) {
+      this.#newPointPresenter.destroy();
+    }
   };
 
   #handleViewAction = (actionType, updateType, update) => {

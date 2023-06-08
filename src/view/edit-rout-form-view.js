@@ -1,19 +1,45 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { POINT_TYPES } from '../const';
+import { POINT_TYPES, POINT_CREATION_MODE } from '../const';
 import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 
+import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 
 const BLANK_POINT = {
-  basePrice: '',
+  basePrice: '0',
   dateFrom: '',
   dateTo: '',
-  offers: [1],
+  offers: [],
   type: POINT_TYPES.TAXI,
-  destination: '1'
+  destination: ''
 };
+
+const RESET_BTN_TEXT = {
+  [POINT_CREATION_MODE.EDITING] : 'Delete',
+  [POINT_CREATION_MODE.CREATING] : 'Cancel'
+};
+
+function createResetButton(mode) {
+  return /*html*/ `<button class="event__reset-btn" type="reset">${RESET_BTN_TEXT[mode]}</button>`;
+}
+
+function createRollUpButton() {
+  return /*html*/ `
+    <button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>
+  `;
+}
+
+function createPointButtonsGroupTemplate(mode) {
+  return /*html*/ `
+    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+    ${createResetButton(mode)}
+    ${mode === POINT_CREATION_MODE.EDITING ? createRollUpButton() : ''}
+  `;
+}
 
 function createTypesChooserTemplate(pointTypes) {
   return Object.values(pointTypes)
@@ -46,18 +72,18 @@ function createDestinationDescriptionTemplate(myDestination) {
   `;
 }
 
-function createEditRoutFormTemplate (point, allOffers, allDestinations) {
+function createEditRoutFormTemplate (point, allOffers, allDestinations, creationMode) {
   const {basePrice, dateFrom, dateTo, offers, type, destination} = point;
 
   const timeFrom = humanizeEventDate(dateFrom, FULL_DATE_FORMAT);
   const timeTo = humanizeEventDate(dateTo, FULL_DATE_FORMAT);
 
-  const offersByType = allOffers.find((item) => item.type === type).offers;
-  const destinationById = allDestinations.find((itemDestination) => itemDestination.id === destination);
+  const offersByType = allOffers.length ? allOffers.find((item) => item.type === type).offers : null;
+  const destinationById = destination ? allDestinations.find((itemDestination) => itemDestination.id === destination) : null;
 
   function createOffersTemplate() {
     return offersByType
-      .map((offer) => {
+      ?.map((offer) => {
         const checked = offers.includes(offer.id) ? 'checked' : '';
 
         return /*html*/ `
@@ -80,6 +106,31 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations) {
         <option value="${item.name}" data-destination-id="${item.id}"></option>`
       )
       .join('');
+  }
+
+  function createOffersSectionTemplate() {
+    if (allOffers.length) {
+      return /*html*/ `
+      <section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+          ${createOffersTemplate(type)}
+        </div>
+      </section>`;
+    }
+    return '';
+  }
+
+  function createDestinationSectionTemplate() {
+    if (destinationById?.description || destinationById?.pictures) {
+      return /*html*/`
+        <section class="event__section  event__section--destination">
+          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+          ${createDestinationDescriptionTemplate(destinationById)}
+        </section>
+      `;
+    }
+    return '';
   }
 
   return /*html*/`
@@ -105,7 +156,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations) {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationById.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="list" name="event-destination" value="${destination ? destinationById?.name : ''}" list="destination-list-1" required>
             <datalist id="destination-list-1">
               ${createDestinationsListTemplate()}
              </datalist>
@@ -113,10 +164,10 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeFrom}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeFrom}" required>
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeTo}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeTo}" required>
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -124,27 +175,16 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${he.encode(basePrice)}" required>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          ${createPointButtonsGroupTemplate(creationMode)}
+
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-            <div class="event__available-offers">
-              ${createOffersTemplate(type)}
-            </div>
-          </section>
+          ${createOffersSectionTemplate()}
 
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            ${createDestinationDescriptionTemplate(destinationById)}
-          </section>
+          ${createDestinationSectionTemplate()}
         </section>
       </form>
     </li>
@@ -159,8 +199,9 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #handleDeleteClick = null;
   #datePickerFrom = null;
   #datePickerTo = null;
+  #creationMode = null;
 
-  constructor({point = BLANK_POINT, allOffers, allDestinations, onFormSubmit, onDeleteClick, onRollUpClick}) {
+  constructor({point = BLANK_POINT, allOffers, allDestinations, onFormSubmit, onDeleteClick, onRollUpClick, creationMode = POINT_CREATION_MODE.EDITING}) {
     super();
 
     this._setState(EditRoutFormView.parsePointToState(point));
@@ -169,12 +210,13 @@ export default class EditRoutFormView extends AbstractStatefulView {
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeleteClick = onDeleteClick;
     this.#handleRollUpClick = onRollUpClick;
+    this.#creationMode = creationMode;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditRoutFormTemplate(this._state, this.#allOffers, this.#allDestinations);
+    return createEditRoutFormTemplate(this._state, this.#allOffers, this.#allDestinations, this.#creationMode);
   }
 
   removeElement() {
@@ -198,14 +240,17 @@ export default class EditRoutFormView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element.querySelector('form')
-      .addEventListener('submit', this.#formSubmitHandler);
+
+    if (this.#creationMode === POINT_CREATION_MODE.EDITING) {
+      this.element.querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#rollUpButtonClick);
+    }
 
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#deleteClick);
 
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#rollUpButtonClick);
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
 
     this.element.querySelector('.event__type-group')
       .addEventListener('click', this.#chooseTypeHandler);
@@ -214,7 +259,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
       .addEventListener('click', this.#offersClickHandler);
 
     this.element.querySelector('.event__input--destination')
-      .addEventListener('change', this.#chooseDestinationHandler);
+      .addEventListener('input', this.#chooseDestinationHandler);
 
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#inputPriceHandler);

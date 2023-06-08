@@ -3,6 +3,7 @@ import EditRoutFormView from '../view/edit-rout-form-view';
 import { remove, render, RenderPosition } from '../framework/render';
 import { UserAction, UpdateType } from '../const';
 import { nanoid } from 'nanoid';
+import { POINT_CREATION_MODE } from '../const';
 
 export default class NewPointPresenter {
   #listComponent = null;
@@ -28,11 +29,13 @@ export default class NewPointPresenter {
       return;
     }
 
+
     this.#newPointComponent = new EditRoutFormView({
       allOffers: this.#offersModel.offers,
       allDestinations: this.#destinationModel.destinations,
       onDeleteClick: this.#handleDeleteClick,
       onFormSubmit: this.#handleSubmitForm,
+      creationMode: POINT_CREATION_MODE.CREATING
     });
 
     render(this.#newPointComponent, this.#listComponent, RenderPosition.AFTERBEGIN);
