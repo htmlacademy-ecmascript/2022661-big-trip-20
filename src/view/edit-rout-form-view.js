@@ -156,7 +156,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="list" name="event-destination" value="${destination ? destinationById?.name : ''}" list="destination-list-1" required>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(`${destinationById?.name}`) : ''}" list="destination-list-1" required>
             <datalist id="destination-list-1">
               ${createDestinationsListTemplate()}
              </datalist>
@@ -259,7 +259,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
       .addEventListener('click', this.#offersClickHandler);
 
     this.element.querySelector('.event__input--destination')
-      .addEventListener('input', this.#chooseDestinationHandler);
+      .addEventListener('change', this.#chooseDestinationHandler);
 
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#inputPriceHandler);
@@ -282,7 +282,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
         locale: {
           firstDayOfWeek: 1,
         },
-        'time_24hr': true
+        'time_24hr': true,
       }
     );
 
@@ -340,6 +340,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
   };
 
   #chooseDestinationHandler = (evt) => {
+
     const newDestinationName = evt.target.value;
     const newDestination = this.#allDestinations.find((item) => item.name === newDestinationName);
 
@@ -347,8 +348,11 @@ export default class EditRoutFormView extends AbstractStatefulView {
       this.updateElement({
         destination: newDestination.id,
       });
+    } else {
+      evt.target.value = '';
     }
   };
+
 
   #offersClickHandler = () => {
     const choosenOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
