@@ -62,6 +62,10 @@ function isPointDateInPresent(startDate, endDate) {
   return startIsSameOrBeforeToday && endIsSameOrAfterToday;
 }
 
+function isDateEqual(dateA, dateB) {
+  return dayjs(dateA).isSame(dateB, 'm');
+}
+
 function getDataDifference(pointA, pointB) {
   return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
@@ -79,4 +83,9 @@ function getPriceDifference(pointA, pointB) {
   return pointB.basePrice - pointA.basePrice;
 }
 
-export { humanizeEventDate, countTimeDuration, isPointDateExpired, isPointDateInFuture, isPointDateInPresent, FULL_DATE_FORMAT, DATE_FORMAT, TIME_FORMAT, getDataDifference, getTimeDifference, getPriceDifference };
+function isPriceEqual(priceA, priceB) {
+  const difference = priceA.basePrice - priceB.basePrice;
+  return difference === 0;
+}
+
+export { humanizeEventDate, countTimeDuration, isPointDateExpired, isPointDateInFuture, isPointDateInPresent, FULL_DATE_FORMAT, DATE_FORMAT, TIME_FORMAT, getDataDifference, getTimeDifference, getPriceDifference, isDateEqual, isPriceEqual };

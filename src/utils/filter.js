@@ -8,13 +8,4 @@ const filter = {
   [FILTER_TYPES.PAST]: (points) => points.filter((point) => isPointDateExpired(point.dateTo)),
 };
 
-function generateFilter(routePoints) {
-  return Object.entries(filter).map(
-    ([filterType, filterPoints]) => ({
-      type: filterType,
-      hasPoints: filterPoints(routePoints).length > 0
-    }),
-  );
-}
-
-export {generateFilter};
+export {filter};

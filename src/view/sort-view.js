@@ -9,7 +9,7 @@ const enebledSortType = {
   [SORT_TYPES.PRICE]: true,
 };
 
-function createSortItemTemplate(sortType, isChecked) {
+function createSortItemTemplate(sortType, currentSortType) {
   const {type , isDisabled} = sortType;
 
   return /*html*/ `
@@ -21,7 +21,7 @@ function createSortItemTemplate(sortType, isChecked) {
         type="radio"
         name="trip-sort"
         value="sort-${type}"
-        ${isChecked ? 'checked' : ''}
+        ${type === currentSortType ? 'checked' : ''}
         ${isDisabled ? 'disabled' : ''}
       >
       <label class="trip-sort__btn" for="sort-${type}">${type}</label>
@@ -29,10 +29,10 @@ function createSortItemTemplate(sortType, isChecked) {
   `;
 }
 
-function createSortTemplate() {
+function createSortTemplate(currentSortType) {
 
   const sortItemTemplate = Object.values(SORT_TYPES)
-    .map((type, index) => createSortItemTemplate({type, isDisabled: !enebledSortType[type]}, index === 0))
+    .map((type) => createSortItemTemplate({type, isDisabled: !enebledSortType[type]}, currentSortType))
     .join('');
 
 
@@ -45,17 +45,19 @@ function createSortTemplate() {
 
 export default class SortView extends AbstractView {
   #handleSortTypeChange = null;
+  #currentSortType = null;
 
-  constructor({onSortTypeChange}) {
+  constructor({currentSortType, onSortTypeChange}) {
     super();
 
+    this.#currentSortType = currentSortType;
     this.#handleSortTypeChange = onSortTypeChange;
 
     this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
   get template() {
-    return createSortTemplate();
+    return createSortTemplate(this.#currentSortType);
   }
 
   #sortTypeChangeHandler = (evt) => {
