@@ -7,12 +7,18 @@ import PointsModel from './model/points-model';
 import OffersModel from './model/offers-model';
 import DestinationsModel from './model/destinations-model';
 import FilterModel from './model/filter-model';
+import PointApiService from './point-api-service';
+
+const AUTHORIZATION = 'Basic m34s67vywy9381dfj';
+const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
 const tripMainElement = document.querySelector('.trip-main');
 const filtersMainElement = tripMainElement.querySelector('.trip-controls__filters');
 const tripEventElement = document.querySelector('.trip-events');
 
-const pointsModel = new PointsModel();
+const pointsModel = new PointsModel({
+  pointApiService: new PointApiService(END_POINT, AUTHORIZATION)
+});
 const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
 const filterModel = new FilterModel();

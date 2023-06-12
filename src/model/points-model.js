@@ -4,7 +4,18 @@ import Observable from '../framework/observable';
 const POINTS_COUNT = 4;
 
 export default class PointsModel extends Observable{
+  #pointApiService = null;
   #points = Array.from({length: POINTS_COUNT}, getRandomRoutPoint);
+
+  constructor({pointApiService}) {
+    super();
+
+    this.#pointApiService = pointApiService;
+
+    this.#pointApiService.points.then((points) => {
+      console.log(points.map(this.#adaptToClient));
+    });
+  }
 
   get points() {
     return this.#points;
@@ -50,4 +61,19 @@ export default class PointsModel extends Observable{
     this._notify(updateType, update);
   }
 
+  #adaptToClient(point) {
+    const adaptedPoint = {...point,
+      basePrice: point['base_price'],
+      dateFrom: point['date_from'],
+      dateTo: point['date_to'],
+      isFavorite: point['is_favorite'],
+    };
+
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['is_favorite'];
+
+    return adaptedPoint;
+  }
 }
