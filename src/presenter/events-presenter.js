@@ -1,16 +1,18 @@
 import {remove, render} from '../framework/render';
 import { sort } from '../utils/sort';
-import { SORT_TYPES, UpdateType, UserAction } from '../const';
+import { SORT_TYPES, UpdateType, UserAction, FILTER_TYPES } from '../const';
+import { filter } from '../utils/filter';
 import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
+import LoadingView from '../view/loading-view';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
-import { filter } from '../utils/filter';
-import { FILTER_TYPES } from '../const';
+
 
 export default class EventPresenter {
   #listComponent = new ListView();
+  #loadingComponent = new LoadingView();
   #emptyListComponent = null;
   #sortComponent = null;
 
@@ -26,6 +28,7 @@ export default class EventPresenter {
   #currentSortType = SORT_TYPES.DAY;
   #filterType = FILTER_TYPES.EVERYTHING;
   #isCreating = false;
+  #isLoading = true;
 
   #onNewRoutPointClose = null;
 
@@ -109,6 +112,10 @@ export default class EventPresenter {
     this.#renderPoints(this.points);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#eventContainer);
+  }
+
   #renderEmptyList() {
     this.#emptyListComponent = new EmptyListMessage({
       filterType : this.#filterType,
@@ -125,11 +132,16 @@ export default class EventPresenter {
   }
 
   #renderEventsBoard() {
-    if (!this.points.length && !this.#isCreating) {
-      this.#renderEmptyList();
+
+    if (this.#isLoading) {
+      this.#renderLoading();
     } else {
-      this.#renderSortList();
-      this.#renderPointsList();
+      if (!this.points.length && !this.#isCreating) {
+        this.#renderEmptyList();
+      } else {
+        this.#renderSortList();
+        this.#renderPointsList();
+      }
     }
   }
 
@@ -139,6 +151,7 @@ export default class EventPresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
@@ -181,6 +194,11 @@ export default class EventPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({resetSortType: true});
+        this.#renderEventsBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderEventsBoard();
         break;
     }

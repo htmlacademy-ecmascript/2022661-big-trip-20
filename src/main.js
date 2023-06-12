@@ -42,11 +42,13 @@ const newRoutPointButtonComponent = new NewRoutPointButtonView({
   onClick : handleNewPointBtnClick
 });
 
-render(new TripInfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
 render(newRoutPointButtonComponent, tripMainElement);
 
 filterPresenter.init();
 eventPresenter.init();
+pointsModel.init().finally(() => {
+  render(new TripInfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
+});
 
 
 function handleNewPointBtnClose () {
