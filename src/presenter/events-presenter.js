@@ -1,16 +1,23 @@
 import {remove, render} from '../framework/render';
+import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { sort } from '../utils/sort';
-import { SORT_TYPES, UpdateType, UserAction } from '../const';
+import { SORT_TYPES, UpdateType, UserAction, FILTER_TYPES } from '../const';
+import { filter } from '../utils/filter';
 import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
+import LoadingView from '../view/loading-view';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
-import { filter } from '../utils/filter';
-import { FILTER_TYPES } from '../const';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT : 1000,
+};
 
 export default class EventPresenter {
   #listComponent = new ListView();
+  #loadingComponent = new LoadingView();
   #emptyListComponent = null;
   #sortComponent = null;
 
@@ -26,6 +33,11 @@ export default class EventPresenter {
   #currentSortType = SORT_TYPES.DAY;
   #filterType = FILTER_TYPES.EVERYTHING;
   #isCreating = false;
+  #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   #onNewRoutPointClose = null;
 
@@ -109,6 +121,10 @@ export default class EventPresenter {
     this.#renderPoints(this.points);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#eventContainer);
+  }
+
   #renderEmptyList() {
     this.#emptyListComponent = new EmptyListMessage({
       filterType : this.#filterType,
@@ -125,11 +141,16 @@ export default class EventPresenter {
   }
 
   #renderEventsBoard() {
-    if (!this.points.length && !this.#isCreating) {
-      this.#renderEmptyList();
+
+    if (this.#isLoading) {
+      this.#renderLoading();
     } else {
-      this.#renderSortList();
-      this.#renderPointsList();
+      if (!this.points.length && !this.#isCreating) {
+        this.#renderEmptyList();
+      } else {
+        this.#renderSortList();
+        this.#renderPointsList();
+      }
     }
   }
 
@@ -139,6 +160,7 @@ export default class EventPresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
@@ -156,18 +178,35 @@ export default class EventPresenter {
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setDeleting();
+        try {
+          this.#pointsModel.deletePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -181,6 +220,11 @@ export default class EventPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({resetSortType: true});
+        this.#renderEventsBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderEventsBoard();
         break;
     }

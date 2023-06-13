@@ -7,14 +7,23 @@ import PointsModel from './model/points-model';
 import OffersModel from './model/offers-model';
 import DestinationsModel from './model/destinations-model';
 import FilterModel from './model/filter-model';
+import PointApiService from './point-api-service';
+
+const AUTHORIZATION = 'Basic m34s67vywy9381dfj';
+const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
 const tripMainElement = document.querySelector('.trip-main');
 const filtersMainElement = tripMainElement.querySelector('.trip-controls__filters');
 const tripEventElement = document.querySelector('.trip-events');
 
-const pointsModel = new PointsModel();
-const destinationsModel = new DestinationsModel();
-const offersModel = new OffersModel();
+const pointApiService = new PointApiService(END_POINT, AUTHORIZATION);
+const destinationsModel = new DestinationsModel({service: pointApiService});
+const offersModel = new OffersModel({service: pointApiService});
+const pointsModel = new PointsModel({
+  service: pointApiService,
+  destinationsModel: destinationsModel,
+  offersModel: offersModel
+});
 const filterModel = new FilterModel();
 
 const eventPresenter = new EventPresenter({
@@ -36,11 +45,13 @@ const newRoutPointButtonComponent = new NewRoutPointButtonView({
   onClick : handleNewPointBtnClick
 });
 
-render(new TripInfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
 render(newRoutPointButtonComponent, tripMainElement);
 
 filterPresenter.init();
 eventPresenter.init();
+pointsModel.init().finally(() => {
+  render(new TripInfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
+});
 
 
 function handleNewPointBtnClose () {
