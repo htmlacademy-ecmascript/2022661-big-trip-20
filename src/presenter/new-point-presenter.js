@@ -2,7 +2,6 @@
 import EditRoutFormView from '../view/edit-rout-form-view';
 import { remove, render, RenderPosition } from '../framework/render';
 import { UserAction, UpdateType } from '../const';
-import { nanoid } from 'nanoid';
 import { POINT_CREATION_MODE } from '../const';
 
 export default class NewPointPresenter {
@@ -63,7 +62,7 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...point}
+      point
     );
     this.destroy();
   };

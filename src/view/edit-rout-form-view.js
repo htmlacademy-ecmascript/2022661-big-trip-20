@@ -2,7 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINT_TYPES, POINT_CREATION_MODE } from '../const';
 import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 
-import he from 'he';
+// import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -45,8 +45,8 @@ function createTypesChooserTemplate(pointTypes) {
   return Object.values(pointTypes)
     .map((item) => /*html*/ `
       <div class="event__type-item">
-        <input id="event-type-${item.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${item.toLowerCase()}">
-        <label class="event__type-label  event__type-label--${item.toLowerCase()}" for="event-type-${item.toLowerCase()}-1" data-type=${item}>${item}</label>
+        <input id="event-type-${item}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${item}">
+        <label class="event__type-label  event__type-label--${item}" for="event-type-${item}-1" data-type=${item}>${item}</label>
       </div>
     `)
     .join('');
@@ -156,7 +156,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(`${destinationById?.name}`) : ''}" list="destination-list-1" required>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? `${destinationById?.name}` : ''}" list="destination-list-1" required>
             <datalist id="destination-list-1">
               ${createDestinationsListTemplate()}
              </datalist>
@@ -175,7 +175,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${he.encode(basePrice)}" required>
+            <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${basePrice}" required>
           </div>
 
           ${createPointButtonsGroupTemplate(creationMode)}
@@ -334,7 +334,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #chooseTypeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      type : evt.target.dataset.type,
+      type : evt.target.dataset.type.toLowerCase(),
       offers: []
     });
   };

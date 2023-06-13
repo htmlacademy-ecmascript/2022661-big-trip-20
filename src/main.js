@@ -16,11 +16,14 @@ const tripMainElement = document.querySelector('.trip-main');
 const filtersMainElement = tripMainElement.querySelector('.trip-controls__filters');
 const tripEventElement = document.querySelector('.trip-events');
 
+const pointApiService = new PointApiService(END_POINT, AUTHORIZATION);
+const destinationsModel = new DestinationsModel({service: pointApiService});
+const offersModel = new OffersModel({service: pointApiService});
 const pointsModel = new PointsModel({
-  pointApiService: new PointApiService(END_POINT, AUTHORIZATION)
+  service: pointApiService,
+  destinationsModel: destinationsModel,
+  offersModel: offersModel
 });
-const destinationsModel = new DestinationsModel();
-const offersModel = new OffersModel();
 const filterModel = new FilterModel();
 
 const eventPresenter = new EventPresenter({
