@@ -21,23 +21,30 @@ const RESET_BTN_TEXT = {
   [POINT_CREATION_MODE.CREATING] : 'Cancel'
 };
 
-function createResetButton(mode) {
-  return /*html*/ `<button class="event__reset-btn" type="reset">${RESET_BTN_TEXT[mode]}</button>`;
+const RESET_BTN_TEXT_DELETING = {
+  [POINT_CREATION_MODE.EDITING] : 'Deleting...',
+  [POINT_CREATION_MODE.CREATING] : 'Cancelling...'
+};
+
+function createResetButton(mode, isDisabled, isDeleting) {
+  return /*html*/ `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''} >${isDeleting ? RESET_BTN_TEXT_DELETING[mode] : RESET_BTN_TEXT[mode]}</button>`;
 }
 
-function createRollUpButton() {
+function createRollUpButton(isDisabled) {
   return /*html*/ `
-    <button class="event__rollup-btn" type="button">
+    <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
       <span class="visually-hidden">Open event</span>
     </button>
   `;
 }
 
-function createPointButtonsGroupTemplate(mode) {
+function createPointButtonsGroupTemplate(mode, isSaving, isDisabled, isDeleting) {
   return /*html*/ `
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    ${createResetButton(mode)}
-    ${mode === POINT_CREATION_MODE.EDITING ? createRollUpButton() : ''}
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+      ${isSaving ? 'Saving...' : 'Save'}
+    </button>
+    ${createResetButton(mode, isDisabled, isDeleting)}
+    ${mode === POINT_CREATION_MODE.EDITING ? createRollUpButton(isDisabled) : ''}
   `;
 }
 
@@ -73,7 +80,7 @@ function createDestinationDescriptionTemplate(myDestination) {
 }
 
 function createEditRoutFormTemplate (point, allOffers, allDestinations, creationMode) {
-  const {basePrice, dateFrom, dateTo, offers, type, destination} = point;
+  const {basePrice, dateFrom, dateTo, offers, type, destination, isSaving, isDisabled, isDeleting} = point;
 
   const timeFrom = humanizeEventDate(dateFrom, FULL_DATE_FORMAT);
   const timeTo = humanizeEventDate(dateTo, FULL_DATE_FORMAT);
@@ -88,7 +95,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
 
         return /*html*/ `
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${offer.id}" data-offer-id="${offer.id}" type="checkbox" name="event-offer-${offer.title}" ${checked}>
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${offer.id}" data-offer-id="${offer.id}" type="checkbox" name="event-offer-${offer.title}" ${checked} ${isDisabled ? 'disabled' : ''}>
             <label class="event__offer-label" for="event-offer-${offer.title}-${offer.id}">
               <span class="event__offer-title">${offer.title}</span>
               &plus;&euro;&nbsp;
@@ -142,7 +149,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -156,7 +163,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? `${destinationById?.name}` : ''}" list="destination-list-1" required>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? `${destinationById?.name}` : ''}" list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
             <datalist id="destination-list-1">
               ${createDestinationsListTemplate()}
              </datalist>
@@ -164,10 +171,10 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeFrom}" required>
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeFrom}" required ${isDisabled ? 'disabled' : ''}>
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeTo}" required>
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeTo}" required ${isDisabled ? 'disabled' : ''}>
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -175,10 +182,10 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${basePrice}" required>
+            <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${basePrice}" required ${isDisabled ? 'disabled' : ''}>
           </div>
 
-          ${createPointButtonsGroupTemplate(creationMode)}
+          ${createPointButtonsGroupTemplate(creationMode, isSaving, isDisabled, isDeleting)}
 
         </header>
         <section class="event__details">
@@ -334,7 +341,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #chooseTypeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      type : evt.target.dataset.type.toLowerCase(),
+      type : evt.target.dataset.type,
       offers: []
     });
   };
@@ -371,10 +378,20 @@ export default class EditRoutFormView extends AbstractStatefulView {
   };
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToPoint(state) {
-    return {...state};
+    const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isDeleting;
+    delete point.isSaving;
+
+    return point;
   }
 }
