@@ -144,13 +144,11 @@ export default class PointPresenter {
 
   #handleSubmitForm = (update) => {
     const isMinorUpdate = !isDateEqual(this.#point.dateFrom , update.dateFrom) || !isDateEqual(this.#point.dateTo , update.dateTo) || !isPriceEqual(this.#point.dateFrom , update.dateFrom);
-
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update
     );
-    this.#replaceEditFormToRoutPoint();
   };
 
   #handleDeleteClick = (point) => {
