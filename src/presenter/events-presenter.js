@@ -144,13 +144,14 @@ export default class EventPresenter {
 
     if (this.#isLoading) {
       this.#renderLoading();
+      return;
+    }
+
+    if (!this.points.length && !this.#isCreating) {
+      this.#renderEmptyList();
     } else {
-      if (!this.points.length && !this.#isCreating) {
-        this.#renderEmptyList();
-      } else {
-        this.#renderSortList();
-        this.#renderPointsList();
-      }
+      this.#renderSortList();
+      this.#renderPointsList();
     }
   }
 

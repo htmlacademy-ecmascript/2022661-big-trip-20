@@ -24,7 +24,6 @@ export default class PointsModel extends Observable{
       await Promise.all([
         this.#offersModel.init(),
         this.#destinationsModel.init(),
-
       ]);
       const points = await this.#service.getPoints();
       this.#points = points.map(this.#adaptToClient);
@@ -44,14 +43,14 @@ export default class PointsModel extends Observable{
 
     try {
       const response = await this.#service.updatePoint(update);
-      const updatePoint = this.#adaptToClient(response);
+      const updatedPoint = this.#adaptToClient(response);
       this.#points = [
         ...this.#points.slice(0, index),
-        updatePoint,
+        updatedPoint,
         ...this.#points.slice(index + 1)
       ];
 
-      this._notify(updateType, updatePoint);
+      this._notify(updateType, updatedPoint);
     } catch (err) {
       throw new Error('Can\'t update point');
     }
