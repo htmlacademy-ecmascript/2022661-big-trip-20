@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { POINT_TYPES, POINT_CREATION_MODE } from '../const';
+import { PointTypes, PointCreationMode } from '../const';
 import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 
 // import he from 'he';
@@ -12,18 +12,18 @@ const BLANK_POINT = {
   dateFrom: '',
   dateTo: '',
   offers: [],
-  type: POINT_TYPES.TAXI,
+  type: PointTypes.TAXI,
   destination: ''
 };
 
 const RESET_BTN_TEXT = {
-  [POINT_CREATION_MODE.EDITING] : 'Delete',
-  [POINT_CREATION_MODE.CREATING] : 'Cancel'
+  [PointCreationMode.EDITING] : 'Delete',
+  [PointCreationMode.CREATING] : 'Cancel'
 };
 
 const RESET_BTN_TEXT_DELETING = {
-  [POINT_CREATION_MODE.EDITING] : 'Deleting...',
-  [POINT_CREATION_MODE.CREATING] : 'Cancelling...'
+  [PointCreationMode.EDITING] : 'Deleting...',
+  [PointCreationMode.CREATING] : 'Cancelling...'
 };
 
 function createResetButton(mode, isDisabled, isDeleting) {
@@ -44,7 +44,7 @@ function createPointButtonsGroupTemplate(mode, isSaving, isDisabled, isDeleting)
       ${isSaving ? 'Saving...' : 'Save'}
     </button>
     ${createResetButton(mode, isDisabled, isDeleting)}
-    ${mode === POINT_CREATION_MODE.EDITING ? createRollUpButton(isDisabled) : ''}
+    ${mode === PointCreationMode.EDITING ? createRollUpButton(isDisabled) : ''}
   `;
 }
 
@@ -154,7 +154,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                  ${createTypesChooserTemplate(POINT_TYPES)}
+                  ${createTypesChooserTemplate(PointTypes)}
               </fieldset>
             </div>
           </div>
@@ -208,7 +208,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #datePickerTo = null;
   #creationMode = null;
 
-  constructor({point = BLANK_POINT, allOffers, allDestinations, onFormSubmit, onDeleteClick, onRollUpClick, creationMode = POINT_CREATION_MODE.EDITING}) {
+  constructor({point = BLANK_POINT, allOffers, allDestinations, onFormSubmit, onDeleteClick, onRollUpClick, creationMode = PointCreationMode.EDITING}) {
     super();
 
     this._setState(EditRoutFormView.parsePointToState(point));
@@ -248,7 +248,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
 
   _restoreHandlers() {
 
-    if (this.#creationMode === POINT_CREATION_MODE.EDITING) {
+    if (this.#creationMode === PointCreationMode.EDITING) {
       this.element.querySelector('.event__rollup-btn')
         .addEventListener('click', this.#rollUpButtonClick);
     }
@@ -340,10 +340,13 @@ export default class EditRoutFormView extends AbstractStatefulView {
 
   #chooseTypeHandler = (evt) => {
     evt.preventDefault();
-    this.updateElement({
-      type : evt.target.dataset.type,
-      offers: []
-    });
+
+    if (evt.target.closest('label')) {
+      this.updateElement({
+        type : evt.target.dataset.type,
+        offers: []
+      });
+    }
   };
 
   #chooseDestinationHandler = (evt) => {

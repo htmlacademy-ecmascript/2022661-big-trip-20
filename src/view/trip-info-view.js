@@ -2,16 +2,12 @@ import AbstractView from '../framework/view/abstract-view';
 import { getDataDifference } from '../utils/points';
 import {humanizeEventDate, DATE_FORMAT } from '../utils/points.js';
 
-function findDestinationById (allDestinations, point) {
-  const destination = allDestinations.find((item) => item.id === point.destination);
-  return destination.name;
-}
-
-function createTripInfoTemplate (points, destinations) {
+function createTripInfoTemplate (points, destinations, offers) {
 
   const dayFilteredPoints = points.length ? points.toSorted(getDataDifference) : '';
   const FIRST_POINT = 0;
   const LAST_POINT = dayFilteredPoints.length - 1;
+  const DESTINATION_TITLE_LENGTH = 3;
 
   function getTripDuration() {
     const firstPointDay = humanizeEventDate(dayFilteredPoints[FIRST_POINT].dateFrom, DATE_FORMAT);
@@ -20,19 +16,26 @@ function createTripInfoTemplate (points, destinations) {
   }
 
   function getTripDestination() {
-    const firsDestination = findDestinationById(destinations, dayFilteredPoints[FIRST_POINT]);
-    const secondDestination = findDestinationById(destinations, dayFilteredPoints[1]);
-    const lastDestination = findDestinationById(destinations, dayFilteredPoints[LAST_POINT]);
+    const destinationsNames = dayFilteredPoints.map((point) => destinations.find((item) => item.id === point.destination).name);
 
-    if (dayFilteredPoints.length === 1) {
-      return firsDestination;
-    } else if (dayFilteredPoints.length === 2) {
-      return `${firsDestination} &mdash; ${lastDestination}`;
-    } else if (dayFilteredPoints.length === 3) {
-      return `${firsDestination} &mdash; ${secondDestination} &mdash; ${lastDestination}`;
-    } else if (dayFilteredPoints.length > 3) {
-      return `${firsDestination} &mdash; ... &mdash; ${lastDestination}`;
-    }
+    return destinationsNames.length <= DESTINATION_TITLE_LENGTH
+      ? destinationsNames.join('&nbsp;&mdash;&nbsp;')
+      : `${destinationsNames[FIRST_POINT]}&nbsp;&mdash;&nbsp;...&nbsp;&mdash;&nbsp;${destinationsNames[LAST_POINT]}`;
+  }
+
+  function getOffersCost(offersIds, allOffers) {
+    return offersIds.reduce(
+      (result, id) => result + (allOffers.find((offer) => offer.id === id)?.price ?? 0),
+      0
+    );
+  }
+
+  function getTripCost() {
+    const price = points?.reduce(
+      (result, point) => result + point.basePrice + getOffersCost(point.offers, offers.find((offer) => point.type === offer.type)?.offers),
+      0
+    );
+    return price;
   }
 
   return /*html*/ `
@@ -42,25 +45,28 @@ function createTripInfoTemplate (points, destinations) {
 
         <p class="trip-info__dates">${points.length ? getTripDuration() : ''}</p>
       </div>
-
       <p class="trip-info__cost">
-        Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+        Total: &euro;&nbsp;<span class="trip-info__cost-value">${points.length ? getTripCost() : ''}</span>
       </p>
+
     </section>
   `;
+
 }
 
 export default class TripInfoView extends AbstractView {
   #points = [];
   #destinations = [];
+  #offers = [];
 
-  constructor({points, destinations}) {
+  constructor({points, destinations, offers}) {
     super();
     this.#points = points;
     this.#destinations = destinations;
+    this.#offers = offers;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#points, this.#destinations);
+    return createTripInfoTemplate(this.#points, this.#destinations, this.#offers);
   }
 }

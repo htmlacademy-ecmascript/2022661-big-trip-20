@@ -50,16 +50,17 @@ const newRoutPointButtonComponent = new NewRoutPointButtonView({
 
 const tripInfoPresenter = new TripInfoPresenter({
   tripMainElement: tripMainElement,
-  pointsModel: pointsModel,
-  destinationsModel: destinationsModel,
+  pointsModel,
+  offersModel,
+  destinationsModel,
 });
 
 
 filterPresenter.init();
 eventPresenter.init();
+tripInfoPresenter.init();
 pointsModel.init().finally(() => {
   render(newRoutPointButtonComponent, tripMainElement);
-  tripInfoPresenter.init();
 });
 
 

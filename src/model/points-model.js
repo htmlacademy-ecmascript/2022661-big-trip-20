@@ -25,6 +25,7 @@ export default class PointsModel extends Observable{
         this.#offersModel.init(),
         this.#destinationsModel.init(),
       ]);
+
       const points = await this.#service.getPoints();
       this.#points = points.map(this.#adaptToClient);
       this._notify(UpdateType.INIT);

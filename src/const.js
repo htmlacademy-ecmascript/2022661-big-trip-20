@@ -1,4 +1,4 @@
-const POINT_TYPES = {
+const PointTypes = {
   TAXI: 'taxi',
   BUS: 'bus',
   TRAIN: 'train',
@@ -10,7 +10,7 @@ const POINT_TYPES = {
   RESTAURANT: 'restaurant',
 };
 
-const FILTER_TYPES = {
+const FilterTypes = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
@@ -22,7 +22,7 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
-const SORT_TYPES = {
+const SortTypes = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',
@@ -43,25 +43,10 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
-const POINT_CREATION_MODE = {
+const PointCreationMode = {
   CREATING: 'CREATING',
   EDITING: 'EDITING'
 };
 
-const DESCRIPTION = [
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  'Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra.',
-  'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
-  'Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
-  'Sed sed nisi sed augue convallis suscipit in sed felis.'
-];
 
-const PHOTO_URL = 'https://loremflickr.com/248/152?random=';
-
-const MIN_PRICE = 5;
-const MAX_PRICE = 5000;
-
-const MIN_DESTINATION_ID = 1;
-const MAX_DESTINATION_ID = 4;
-
-export {POINT_TYPES, DESCRIPTION, PHOTO_URL, MIN_PRICE, MAX_PRICE, MIN_DESTINATION_ID, MAX_DESTINATION_ID, FILTER_TYPES, SORT_TYPES, UserAction, UpdateType, POINT_CREATION_MODE, Mode};
+export {PointTypes, FilterTypes, SortTypes, UserAction, UpdateType, PointCreationMode, Mode};

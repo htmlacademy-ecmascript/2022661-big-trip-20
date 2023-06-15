@@ -1,11 +1,11 @@
 import AbstractView from '../framework/view/abstract-view';
-import { FILTER_TYPES } from '../const';
+import { FilterTypes } from '../const';
 
 const LIST_EMPTY_TEXT = {
-  [FILTER_TYPES.EVERYTHING]: 'Click New Event to create your first point',
-  [FILTER_TYPES.PAST] : 'There are no past events now',
-  [FILTER_TYPES.PRESENT] : 'There are no present events now',
-  [FILTER_TYPES.FUTURE] : 'There are no future events now',
+  [FilterTypes.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterTypes.PAST] : 'There are no past events now',
+  [FilterTypes.PRESENT] : 'There are no present events now',
+  [FilterTypes.FUTURE] : 'There are no future events now',
 };
 
 function createEmptyListMessageView ({filterType}) {
