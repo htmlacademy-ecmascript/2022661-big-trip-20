@@ -7,6 +7,7 @@ import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
 import LoadingView from '../view/loading-view';
+import ErrorMessageView from '../view/error-message-view';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
 
@@ -18,6 +19,7 @@ const TimeLimit = {
 export default class EventPresenter {
   #listComponent = new ListView();
   #loadingComponent = new LoadingView();
+  #errorMessageComponent = new ErrorMessageView();
   #emptyListComponent = null;
   #sortComponent = null;
 
@@ -155,6 +157,10 @@ export default class EventPresenter {
     }
   }
 
+  #renderErrorMessage () {
+    render(this.#errorMessageComponent, this.#eventContainer);
+  }
+
   #clearBoard({resetSortType = false} = {}) {
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
@@ -226,7 +232,11 @@ export default class EventPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
-        this.#renderEventsBoard();
+        if(data.isError) {
+          this.#renderErrorMessage();
+        } else {
+          this.#renderEventsBoard();
+        }
         break;
     }
   };

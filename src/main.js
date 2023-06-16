@@ -55,14 +55,12 @@ const tripInfoPresenter = new TripInfoPresenter({
   destinationsModel,
 });
 
-
 filterPresenter.init();
 eventPresenter.init();
 tripInfoPresenter.init();
 pointsModel.init().finally(() => {
   render(newRoutPointButtonComponent, tripMainElement);
 });
-
 
 function handleNewPointBtnClose () {
   newRoutPointButtonComponent.element.disabled = false;

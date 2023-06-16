@@ -2,7 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { PointTypes, PointCreationMode } from '../const';
 import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 
-// import he from 'he';
+import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -48,14 +48,19 @@ function createPointButtonsGroupTemplate(mode, isSaving, isDisabled, isDeleting)
   `;
 }
 
-function createTypesChooserTemplate(pointTypes) {
+function createTypesChooserTemplate(pointTypes, choosenType) {
   return Object.values(pointTypes)
-    .map((item) => /*html*/ `
+    .map((type) => {
+      const typeWithCapitalLetter = type[0].toUpperCase() + type.slice(1);
+      const checked = choosenType === type;
+
+      return /*html*/ `
       <div class="event__type-item">
-        <input id="event-type-${item}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${item}">
-        <label class="event__type-label  event__type-label--${item}" for="event-type-${item}-1" data-type=${item}>${item}</label>
+        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${checked ? 'checked' : ''}>
+        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1" data-type=${type}>${typeWithCapitalLetter}</label>
       </div>
-    `)
+      `;
+    })
     .join('');
 }
 
@@ -154,7 +159,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                  ${createTypesChooserTemplate(PointTypes)}
+                  ${createTypesChooserTemplate(PointTypes, type)}
               </fieldset>
             </div>
           </div>
@@ -163,7 +168,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? `${destinationById?.name}` : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(`${destinationById?.name}`) : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
             <datalist id="destination-list-1">
               ${createDestinationsListTemplate()}
              </datalist>
@@ -182,7 +187,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${he.encode(`${basePrice}`)}" ${isDisabled ? 'disabled' : ''}>
           </div>
 
           ${createPointButtonsGroupTemplate(creationMode, isSaving, isDisabled, isDeleting)}
