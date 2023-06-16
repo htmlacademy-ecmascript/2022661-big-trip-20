@@ -2,7 +2,7 @@ import {render, replace, remove} from '../framework/render';
 import EditRoutFormView from '../view/edit-rout-form-view';
 import RoutPointView from '../view/route-point-view';
 import { UserAction, UpdateType, Mode } from '../const';
-import { isDateEqual, isPriceEqual } from '../utils/points';
+import { isDateDifferent, isPriceDifferent } from '../utils/points';
 
 
 export default class PointPresenter {
@@ -143,7 +143,12 @@ export default class PointPresenter {
   };
 
   #handleSubmitForm = (update) => {
-    const isMinorUpdate = !isDateEqual(this.#point.dateFrom , update.dateFrom) || !isDateEqual(this.#point.dateTo , update.dateTo) || !isPriceEqual(this.#point.dateFrom , update.dateFrom);
+    const isNewDateFromDifferent = isDateDifferent(this.#point.dateFrom , update.dateFrom);
+    const isNewDateToDifferent = isDateDifferent(this.#point.dateTo , update.dateTo);
+    const isNewPriceDifferent = isPriceDifferent(this.#point, update);
+
+    const isMinorUpdate = isNewDateFromDifferent || isNewDateToDifferent || isNewPriceDifferent ;
+
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,

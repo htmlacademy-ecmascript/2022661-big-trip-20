@@ -1,8 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { POINT_TYPES, POINT_CREATION_MODE } from '../const';
+import { PointTypes, PointCreationMode } from '../const';
 import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 
-// import he from 'he';
+import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -12,18 +12,18 @@ const BLANK_POINT = {
   dateFrom: '',
   dateTo: '',
   offers: [],
-  type: POINT_TYPES.TAXI,
+  type: PointTypes.TAXI,
   destination: ''
 };
 
 const RESET_BTN_TEXT = {
-  [POINT_CREATION_MODE.EDITING] : 'Delete',
-  [POINT_CREATION_MODE.CREATING] : 'Cancel'
+  [PointCreationMode.EDITING] : 'Delete',
+  [PointCreationMode.CREATING] : 'Cancel'
 };
 
 const RESET_BTN_TEXT_DELETING = {
-  [POINT_CREATION_MODE.EDITING] : 'Deleting...',
-  [POINT_CREATION_MODE.CREATING] : 'Cancelling...'
+  [PointCreationMode.EDITING] : 'Deleting...',
+  [PointCreationMode.CREATING] : 'Cancelling...'
 };
 
 function createResetButton(mode, isDisabled, isDeleting) {
@@ -44,18 +44,23 @@ function createPointButtonsGroupTemplate(mode, isSaving, isDisabled, isDeleting)
       ${isSaving ? 'Saving...' : 'Save'}
     </button>
     ${createResetButton(mode, isDisabled, isDeleting)}
-    ${mode === POINT_CREATION_MODE.EDITING ? createRollUpButton(isDisabled) : ''}
+    ${mode === PointCreationMode.EDITING ? createRollUpButton(isDisabled) : ''}
   `;
 }
 
-function createTypesChooserTemplate(pointTypes) {
+function createTypesChooserTemplate(pointTypes, choosenType) {
   return Object.values(pointTypes)
-    .map((item) => /*html*/ `
+    .map((type) => {
+      const typeWithCapitalLetter = type[0].toUpperCase() + type.slice(1);
+      const checked = choosenType === type;
+
+      return /*html*/ `
       <div class="event__type-item">
-        <input id="event-type-${item}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${item}">
-        <label class="event__type-label  event__type-label--${item}" for="event-type-${item}-1" data-type=${item}>${item}</label>
+        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${checked ? 'checked' : ''}>
+        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1" data-type=${type}>${typeWithCapitalLetter}</label>
       </div>
-    `)
+      `;
+    })
     .join('');
 }
 
@@ -154,7 +159,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                  ${createTypesChooserTemplate(POINT_TYPES)}
+                  ${createTypesChooserTemplate(PointTypes, type)}
               </fieldset>
             </div>
           </div>
@@ -163,7 +168,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? `${destinationById?.name}` : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(`${destinationById?.name}`) : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
             <datalist id="destination-list-1">
               ${createDestinationsListTemplate()}
              </datalist>
@@ -182,7 +187,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${he.encode(`${basePrice}`)}" ${isDisabled ? 'disabled' : ''}>
           </div>
 
           ${createPointButtonsGroupTemplate(creationMode, isSaving, isDisabled, isDeleting)}
@@ -208,7 +213,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
   #datePickerTo = null;
   #creationMode = null;
 
-  constructor({point = BLANK_POINT, allOffers, allDestinations, onFormSubmit, onDeleteClick, onRollUpClick, creationMode = POINT_CREATION_MODE.EDITING}) {
+  constructor({point = BLANK_POINT, allOffers, allDestinations, onFormSubmit, onDeleteClick, onRollUpClick, creationMode = PointCreationMode.EDITING}) {
     super();
 
     this._setState(EditRoutFormView.parsePointToState(point));
@@ -248,7 +253,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
 
   _restoreHandlers() {
 
-    if (this.#creationMode === POINT_CREATION_MODE.EDITING) {
+    if (this.#creationMode === PointCreationMode.EDITING) {
       this.element.querySelector('.event__rollup-btn')
         .addEventListener('click', this.#rollUpButtonClick);
     }
@@ -340,10 +345,13 @@ export default class EditRoutFormView extends AbstractStatefulView {
 
   #chooseTypeHandler = (evt) => {
     evt.preventDefault();
-    this.updateElement({
-      type : evt.target.dataset.type,
-      offers: []
-    });
+
+    if (evt.target.closest('label')) {
+      this.updateElement({
+        type : evt.target.dataset.type,
+        offers: []
+      });
+    }
   };
 
   #chooseDestinationHandler = (evt) => {

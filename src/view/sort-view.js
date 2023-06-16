@@ -1,12 +1,12 @@
 import AbstractView from '../framework/view/abstract-view';
-import { SORT_TYPES } from '../const';
+import { SortTypes } from '../const';
 
 const enebledSortType = {
-  [SORT_TYPES.DAY] : true,
-  [SORT_TYPES.EVENT]: false,
-  [SORT_TYPES.TIME]: true,
-  [SORT_TYPES.OFFERS]:false,
-  [SORT_TYPES.PRICE]: true,
+  [SortTypes.DAY] : true,
+  [SortTypes.EVENT]: false,
+  [SortTypes.TIME]: true,
+  [SortTypes.OFFERS]:false,
+  [SortTypes.PRICE]: true,
 };
 
 function createSortItemTemplate(sortType, currentSortType) {
@@ -31,7 +31,7 @@ function createSortItemTemplate(sortType, currentSortType) {
 
 function createSortTemplate(currentSortType) {
 
-  const sortItemTemplate = Object.values(SORT_TYPES)
+  const sortItemTemplate = Object.values(SortTypes)
     .map((type) => createSortItemTemplate({type, isDisabled: !enebledSortType[type]}, currentSortType))
     .join('');
 

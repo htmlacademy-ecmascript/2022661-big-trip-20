@@ -1,12 +1,15 @@
-import TripInfoView from './view/trip-info-view';
 import NewRoutPointButtonView from './view/new-rout-point-button-view';
-import {render, RenderPosition} from './framework/render';
+import {render} from './framework/render';
+
 import EventPresenter from './presenter/events-presenter';
 import FilterPresenter from './presenter/filter-presenter';
+import TripInfoPresenter from './presenter/trip-info-presenter';
+
 import PointsModel from './model/points-model';
 import OffersModel from './model/offers-model';
 import DestinationsModel from './model/destinations-model';
 import FilterModel from './model/filter-model';
+
 import PointApiService from './point-api-service';
 
 const AUTHORIZATION = 'Basic m34s67vywy9381dfj';
@@ -45,14 +48,19 @@ const newRoutPointButtonComponent = new NewRoutPointButtonView({
   onClick : handleNewPointBtnClick
 });
 
-render(newRoutPointButtonComponent, tripMainElement);
+const tripInfoPresenter = new TripInfoPresenter({
+  tripMainElement: tripMainElement,
+  pointsModel,
+  offersModel,
+  destinationsModel,
+});
 
 filterPresenter.init();
 eventPresenter.init();
+tripInfoPresenter.init();
 pointsModel.init().finally(() => {
-  render(new TripInfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
+  render(newRoutPointButtonComponent, tripMainElement);
 });
-
 
 function handleNewPointBtnClose () {
   newRoutPointButtonComponent.element.disabled = false;

@@ -1,12 +1,13 @@
 import {remove, render} from '../framework/render';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { sort } from '../utils/sort';
-import { SORT_TYPES, UpdateType, UserAction, FILTER_TYPES } from '../const';
+import { SortTypes, UpdateType, UserAction, FilterTypes } from '../const';
 import { filter } from '../utils/filter';
 import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
 import EmptyListMessage from '../view/empty-list-view';
 import LoadingView from '../view/loading-view';
+import ErrorMessageView from '../view/error-message-view';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
 
@@ -18,6 +19,7 @@ const TimeLimit = {
 export default class EventPresenter {
   #listComponent = new ListView();
   #loadingComponent = new LoadingView();
+  #errorMessageComponent = new ErrorMessageView();
   #emptyListComponent = null;
   #sortComponent = null;
 
@@ -30,8 +32,8 @@ export default class EventPresenter {
   #offersModel = null;
   #filterModel = null;
 
-  #currentSortType = SORT_TYPES.DAY;
-  #filterType = FILTER_TYPES.EVERYTHING;
+  #currentSortType = SortTypes.DAY;
+  #filterType = FilterTypes.EVERYTHING;
   #isCreating = false;
   #isLoading = true;
   #uiBlocker = new UiBlocker({
@@ -77,8 +79,8 @@ export default class EventPresenter {
 
   createPoint() {
     this.#isCreating = true;
-    this.#currentSortType = SORT_TYPES.DAY;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FILTER_TYPES.EVERYTHING);
+    this.#currentSortType = SortTypes.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
 
     this.#handleModeChange();
     this.#newPointPresenter.init();
@@ -155,6 +157,10 @@ export default class EventPresenter {
     }
   }
 
+  #renderErrorMessage () {
+    render(this.#errorMessageComponent, this.#eventContainer);
+  }
+
   #clearBoard({resetSortType = false} = {}) {
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
@@ -168,7 +174,7 @@ export default class EventPresenter {
     }
 
     if(resetSortType) {
-      this.#currentSortType = SORT_TYPES.DAY;
+      this.#currentSortType = SortTypes.DAY;
     }
   }
 
@@ -226,7 +232,11 @@ export default class EventPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
-        this.#renderEventsBoard();
+        if(data.isError) {
+          this.#renderErrorMessage();
+        } else {
+          this.#renderEventsBoard();
+        }
         break;
     }
   };

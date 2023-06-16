@@ -13,7 +13,6 @@ export default class PointApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
-
   getOffers() {
     return this._load({url: 'offers'})
       .then(ApiService.parseResponse);
