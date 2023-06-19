@@ -1,4 +1,4 @@
-const PointTypes = {
+const PointType = {
   TAXI: 'taxi',
   BUS: 'bus',
   TRAIN: 'train',
@@ -10,14 +10,14 @@ const PointTypes = {
   RESTAURANT: 'restaurant',
 };
 
-const FilterTypes = {
+const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
   PAST: 'past',
 };
 
-const SortTypes = {
+const SortType = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',
@@ -49,4 +49,4 @@ const PointCreationMode = {
 };
 
 
-export {PointTypes, FilterTypes, SortTypes, UserAction, UpdateType, PointCreationMode, Mode};
+export {PointType, FilterType, SortType, UserAction, UpdateType, PointCreationMode, Mode};
