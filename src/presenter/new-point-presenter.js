@@ -1,4 +1,3 @@
-// import NewRouteCreationFormView from '../view/new-route-creation-form-view';
 import EditRoutFormView from '../view/edit-rout-form-view';
 import { remove, render, RenderPosition } from '../framework/render';
 import { UserAction, UpdateType } from '../const';

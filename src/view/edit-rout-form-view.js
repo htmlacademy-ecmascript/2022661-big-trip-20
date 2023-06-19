@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { PointTypes, PointCreationMode } from '../const';
+import { PointType, PointCreationMode } from '../const';
 import {humanizeEventDate, FULL_DATE_FORMAT } from '../utils/points';
 
 import he from 'he';
@@ -12,7 +12,7 @@ const BLANK_POINT = {
   dateFrom: '',
   dateTo: '',
   offers: [],
-  type: PointTypes.TAXI,
+  type: PointType.TAXI,
   destination: ''
 };
 
@@ -159,7 +159,7 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                  ${createTypesChooserTemplate(PointTypes, type)}
+                  ${createTypesChooserTemplate(PointType, type)}
               </fieldset>
             </div>
           </div>

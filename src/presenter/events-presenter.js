@@ -1,11 +1,11 @@
 import {remove, render} from '../framework/render';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import { sort } from '../utils/sort';
-import { SortTypes, UpdateType, UserAction, FilterTypes } from '../const';
+import { SortType, UpdateType, UserAction, FilterType } from '../const';
 import { filter } from '../utils/filter';
 import ListView from '../view/list-view';
 import SortView from '../view/sort-view';
-import EmptyListMessage from '../view/empty-list-view';
+import EmptyListMessage from '../view/empty-list-message-view';
 import LoadingView from '../view/loading-view';
 import ErrorMessageView from '../view/error-message-view';
 import PointPresenter from './point-presenter';
@@ -32,8 +32,8 @@ export default class EventPresenter {
   #offersModel = null;
   #filterModel = null;
 
-  #currentSortType = SortTypes.DAY;
-  #filterType = FilterTypes.EVERYTHING;
+  #currentSortType = SortType.DAY;
+  #filterType = FilterType.EVERYTHING;
   #isCreating = false;
   #isLoading = true;
   #uiBlocker = new UiBlocker({
@@ -79,8 +79,8 @@ export default class EventPresenter {
 
   createPoint() {
     this.#isCreating = true;
-    this.#currentSortType = SortTypes.DAY;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
 
     this.#handleModeChange();
     this.#newPointPresenter.init();
@@ -174,7 +174,7 @@ export default class EventPresenter {
     }
 
     if(resetSortType) {
-      this.#currentSortType = SortTypes.DAY;
+      this.#currentSortType = SortType.DAY;
     }
   }
 
