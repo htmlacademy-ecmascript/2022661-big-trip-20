@@ -1,4 +1,4 @@
-import { SortTypes } from '../const';
+import { SortType } from '../const';
 import { getDataDifference, getTimeDifference, getPriceDifference } from './points';
 
 if(!Array.prototype.toSorted) {
@@ -8,15 +8,15 @@ if(!Array.prototype.toSorted) {
 }
 
 const sort = {
-  [SortTypes.DAY]: (points) => points.toSorted(getDataDifference),
-  [SortTypes.PRICE]: (points) => points.toSorted(getPriceDifference) ,
-  [SortTypes.EVENT]: () => {
-    throw new Error (`Sort by ${SortTypes.OFFERS} is not implemented`);
+  [SortType.DAY]: (points) => points.toSorted(getDataDifference),
+  [SortType.PRICE]: (points) => points.toSorted(getPriceDifference) ,
+  [SortType.EVENT]: () => {
+    throw new Error (`Sort by ${SortType.OFFERS} is not implemented`);
   },
-  [SortTypes.OFFERS]:() => {
-    throw new Error (`Sort by ${SortTypes.OFFERS} is not implemented`);
+  [SortType.OFFERS]:() => {
+    throw new Error (`Sort by ${SortType.OFFERS} is not implemented`);
   },
-  [SortTypes.TIME]: (points) => points.toSorted(getTimeDifference),
+  [SortType.TIME]: (points) => points.toSorted(getTimeDifference),
 };
 
 export {sort};
