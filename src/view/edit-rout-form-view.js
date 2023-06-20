@@ -56,8 +56,8 @@ function createTypesChooserTemplate(pointTypes, choosenType) {
 
       return /*html*/ `
       <div class="event__type-item">
-        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${checked ? 'checked' : ''}>
-        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1" data-type=${type}>${typeWithCapitalLetter}</label>
+        <input id="event-type-${he.encode(type)}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${he.encode(type)}" ${checked ? 'checked' : ''}>
+        <label class="event__type-label  event__type-label--${he.encode(type)}" for="event-type-${he.encode(type)}-1" data-type=${he.encode(type)}>${he.encode(typeWithCapitalLetter)}</label>
       </div>
       `;
     })
@@ -69,12 +69,12 @@ function createDestinationDescriptionTemplate(myDestination) {
 
   const destinationPictures = pictures
     .map((picture) => /*html*/ `
-      <img class="event__photo" src="${picture.src}" alt="${picture.alt}">
+      <img class="event__photo" src="${he.encode(`${picture.src}`)}" alt="${he.encode(`${picture.alt}`)}">
     `)
     .join('');
 
   return /*html*/ `
-    <p class="event__destination-description">${description}</p>
+    <p class="event__destination-description">${he.encode(description)}</p>
 
     <div class="event__photos-container">
       <div class="event__photos-tape">
@@ -100,11 +100,11 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
 
         return /*html*/ `
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${offer.id}" data-offer-id="${offer.id}" type="checkbox" name="event-offer-${offer.title}" ${checked} ${isDisabled ? 'disabled' : ''}>
-            <label class="event__offer-label" for="event-offer-${offer.title}-${offer.id}">
-              <span class="event__offer-title">${offer.title}</span>
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${he.encode(`${offer.title}`)}-${he.encode(`${offer.id}`)}" data-offer-id="${he.encode(`${offer.id}`)}" type="checkbox" name="event-offer-${he.encode(`${offer.title}`)}" ${checked} ${isDisabled ? 'disabled' : ''}>
+            <label class="event__offer-label" for="event-offer-${he.encode(`${offer.title}`)}-${he.encode(`${offer.id}`)}">
+              <span class="event__offer-title">${he.encode(`${offer.title}`)}</span>
               &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer.price}</span>
+              <span class="event__offer-price">${he.encode(`${offer.price}`)}</span>
             </label>
           </div>
         `;
@@ -115,13 +115,13 @@ function createEditRoutFormTemplate (point, allOffers, allDestinations, creation
   function createDestinationsListTemplate() {
     return allDestinations
       .map((item) => `
-        <option value="${item.name}" data-destination-id="${item.id}"></option>`
+        <option value="${he.encode(`${item.name}`)}" data-destination-id="${he.encode(`${item.id}`)}"></option>`
       )
       .join('');
   }
 
   function createOffersSectionTemplate() {
-    if (allOffers.length) {
+    if (offersByType.length) {
       return /*html*/ `
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -268,7 +268,7 @@ export default class EditRoutFormView extends AbstractStatefulView {
       .addEventListener('click', this.#chooseTypeHandler);
 
     this.element.querySelector('.event__available-offers')
-      .addEventListener('click', this.#offersClickHandler);
+      ?.addEventListener('click', this.#offersClickHandler);
 
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#chooseDestinationHandler);
