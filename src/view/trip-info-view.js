@@ -2,6 +2,8 @@ import AbstractView from '../framework/view/abstract-view';
 import { getDataDifference } from '../utils/points';
 import {humanizeEventDate, DATE_FORMAT } from '../utils/points.js';
 
+import he from 'he';
+
 function createTripInfoTemplate (points, destinations, offers) {
 
   const dayFilteredPoints = points.length ? points.toSorted(getDataDifference) : '';
@@ -20,7 +22,7 @@ function createTripInfoTemplate (points, destinations, offers) {
 
     return destinationsNames.length <= DESTINATION_TITLE_LENGTH
       ? destinationsNames.join('&nbsp;&mdash;&nbsp;')
-      : `${destinationsNames[FIRST_POINT]}&nbsp;&mdash;&nbsp;...&nbsp;&mdash;&nbsp;${destinationsNames[LAST_POINT]}`;
+      : `${he.encode(`${destinationsNames[FIRST_POINT]}`)}&nbsp;&mdash;&nbsp;...&nbsp;&mdash;&nbsp;${he.encode(`${destinationsNames[LAST_POINT]}`)}`;
   }
 
   function getOffersCost(offersIds, allOffers) {
