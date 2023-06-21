@@ -1,6 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {humanizeEventDate, countTimeDuration, DATE_FORMAT, TIME_FORMAT } from '../utils/points.js';
 
+import he from 'he';
+
 function createRoutPointTemplate (point, offersByType, destinationById) {
   const {basePrice, dateFrom, dateTo, offers, type, isFavorite} = point;
 
@@ -17,9 +19,9 @@ function createRoutPointTemplate (point, offersByType, destinationById) {
     return findChosenOffers(offers)
       .map((item) => /*html*/ `
         <li class="event__offer">
-          <span class="event__offer-title">${item.title}</span>
+          <span class="event__offer-title">${he.encode(`${item.title}`)}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${item.price}</span>
+          <span class="event__offer-price">${he.encode(`${item.price}`)}</span>
         </li>
       `)
       .join('');
@@ -30,9 +32,9 @@ function createRoutPointTemplate (point, offersByType, destinationById) {
       <div class="event">
         <time class="event__date" datetime="${dateFrom}">${date}</time>
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${he.encode(type)}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${destinationById.name}</h3>
+        <h3 class="event__title">${he.encode(type)} ${he.encode(`${destinationById.name}`)}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${dateFrom}">${timeFrom}</time>
@@ -42,7 +44,7 @@ function createRoutPointTemplate (point, offersByType, destinationById) {
           <p class="event__duration">${timeDuration}</p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+          &euro;&nbsp;<span class="event__price-value">${he.encode(`${basePrice}`)}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
